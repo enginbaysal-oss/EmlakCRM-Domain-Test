@@ -1,0 +1,56 @@
+name: Check safe test-domain bulk backup recovery controls
+on:
+  push:
+    paths:
+      - '.github/workflows/restore-ui-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check HTML and no-write backup protections
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app/preview-guard.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          text=Path('app/bulut-yedek.html').read_text(encoding='utf-8')
+          guard=Path('app/preview-guard.js').read_text(encoding='utf-8')
+          assert '<script src="./preview-guard.js"></script>' in text
+          assert 'selectAllPreview' in text and 'selectNonePreview' in text
+          assert text.count('localStorage.setItem(key,updated);')==1
+          assert 'Bu sırada yerel kayıtlar değişti.' in text
+          assert 'Bu cihazda başka hesap aktif' in text
+          assert 'Mevcut cihaz yedeğimi indirdim' in text
+          assert 'Bu adreste 0 / 0 görünmesi normaldir' in guard
+          assert 'app/bulut-yedek.html' in guard
+          script=re.search(r'<script>\s*([\s\S]+?)\s*</script>',text)
+          assert script, 'restore script missing'
+          Path('/tmp/restore-check.js').write_text(script.group(1),encoding='utf-8')
+          print('BACKUP_UI_GUARD_PRESENT')
+          PY
+          node --check /tmp/restore-check.js
+      - name: Check published HTTPS test controls and legacy CRM availability
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5 6; do
+            html="$(mktemp)"; guard="$(mktemp)"
+            if curl -fsSL --max-time 12 'https://emlkcrm.com.tr/app/bulut-yedek.html?check=20261111' -o "$html" &&
+               curl -fsSL --max-time 12 'https://emlkcrm.com.tr/app/preview-guard.js?check=20261111' -o "$guard" &&
+               grep -q 'Tüm Kayıtları Seç' "$html" &&
+               grep -q 'Bu adreste 0 / 0 görünmesi normaldir' "$guard"; then
+              echo 'TEST_DOMAIN_SAFE_RESTORE_UI_LIVE_OK'
+              break
+            fi
+            if [ "$i" -eq 6 ]; then echo 'NOT_LIVE'; exit 1; fi
+            sleep 8
+          done
+          curl -fsSL --max-time 12 'https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html' -o /dev/null
+          echo 'ORIGINAL_CRM_STILL_AVAILABLE'
