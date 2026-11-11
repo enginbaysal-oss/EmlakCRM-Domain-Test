@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#153e5a">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src https://tffvwxskvjuxoekwgdef.supabase.co; img-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; upgrade-insecure-requests">
+<title>EmlakCRM | Güvenli Hesap ve Bulut Yedek Testi</title>
+<style>
+:root{--navy:#143e5b;--ink:#203d51;--line:#dce9f1;--orange:#ee8520}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:linear-gradient(150deg,#eef6fa,#f7fbfd);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink)}
+header{background:var(--navy);color:white}
+.header{max-width:850px;margin:auto;padding:20px;display:flex;justify-content:space-between;gap:16px;align-items:center}
+.logo{color:white;font-weight:900;font-size:25px;text-decoration:none;letter-spacing:-1px}.logo span{color:#ffbb70}
+header nav a{font-size:14px;color:#e4f0f8;font-weight:700;text-decoration:none}
+main{max-width:790px;margin:29px auto 55px;padding:0 18px}
+.card{background:white;border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 12px 33px #16385018}
+.pill{display:inline-block;color:#166a53;background:#e2f5eb;border-radius:99px;padding:6px 11px;font-size:13px;font-weight:750}
+h1{font-size:clamp(25px,5vw,33px);line-height:1.18;letter-spacing:-.6px;margin:18px 0 11px}
+h2{font-size:20px;margin:4px 0 12px}
+p{color:#536c7f;margin:11px 0}
+label{display:block;margin-top:17px;margin-bottom:5px;font-weight:750}
+input{display:block;width:100%;min-height:48px;border:1px solid #b5c9d8;border-radius:10px;padding:11px 13px;background:#fafcff;font:inherit}
+input:focus-visible{outline:3px solid #a7d8ef}
+button{display:inline-flex;min-height:46px;align-items:center;justify-content:center;border:0;border-radius:10px;padding:11px 17px;font:inherit;font-weight:800;cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+.primary{background:var(--orange);color:#1c3247;box-shadow:0 4px 0 #bc6515}
+.secondary{background:#e9f0f5;color:var(--navy)}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:23px}
+.notice{padding:14px;border-radius:10px;border:1px solid #cfe5f1;background:#edf7fb;font-size:14px;line-height:1.6;margin-top:16px;color:#31556f}
+.notice.error{border-color:#ecc1b5;background:#fff1ea;color:#9f402e}
+.notice.success{border-color:#bfe1cb;background:#e8f6ed;color:#205f41}
+#status:empty{display:none}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:18px}
+.item{border:1px solid var(--line);background:#f3f8fb;border-radius:13px;padding:17px;min-width:0}
+.item h3{font-size:14px;margin:0 0 9px}
+.item strong{font-size:27px;display:block;color:var(--navy);line-height:1.2}
+.item small{display:block;color:#607589;font-size:12px;margin-top:7px;overflow-wrap:anywhere}
+footer{display:flex;gap:15px;flex-wrap:wrap;justify-content:space-between;margin-top:24px;font-size:14px}
+a{color:#16698b;font-weight:700}
+hr{height:1px;border:0;background:var(--line);margin:25px 0}
+[hidden]{display:none!important}
+@media(max-width:640px){main{margin:15px auto 36px}.card{padding:22px 18px}.grid{grid-template-columns:1fr}.actions button{width:100%}.logo{font-size:22px}header nav a{font-size:12px}}
+</style>
+</head>
+<body>
+<header><div class="header"><a class="logo" href="https://emlkcrm.com.tr/">Emlak<span>CRM</span></a><nav><a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/">Çalışan CRM’ye dön</a></nav></div></header>
+<main><section class="card">
+<span class="pill">Alan adı taşıma testi · Salt okunur</span>
+<h1>Hesap ve bulut yedek kontrolü</h1>
+<p>Yeni alan adı üzerinden mevcut EmlakCRM hesabınızı doğrulayıp <strong>yalnızca kendi bulut yedeklerinizin sayısını ve son yedek tarihini</strong> görebilirsiniz.</p>
+<div class="notice"><strong>Bu ekran gerçek CRM uygulaması değildir.</strong> Kayıtlarınızı indirmez, silmez veya geri yüklemez. Giriş bilgileri doğrudan Supabase kimlik doğrulama sunucusuna gönderilir. Test sayfası parola ve oturumunuzu kendi tarayıcı depolamasına kaydetmez.</div>
+<form id="testForm" autocomplete="off">
+<label for="email">Mevcut EmlakCRM hesabınızın e-posta adresi</label>
+<input id="email" name="email" type="email" autocomplete="off" inputmode="email" maxlength="254" required placeholder="ornek@eposta.com">
+<label for="password">EmlakCRM giriş şifresi</label>
+<input id="password" name="password" type="password" autocomplete="off" maxlength="256" required>
+<div class="actions"><button class="primary" type="submit" id="check">Hesabımı ve Yedekleri Kontrol Et</button><button class="secondary" type="button" id="clear">Testi Bitir / Temizle</button></div>
+</form>
+<div id="status" class="notice" role="status" aria-live="polite"></div>
+<section id="results" hidden>
+<hr>
+<h2>Hesabınız doğrulandı ✓</h2>
+<p>Bulutta hesabınıza ait en son yedeklerde görülen kayıt sayıları:</p>
+<div id="backupGrid" class="grid"></div>
+<p><small>Bu sayılar yalnızca bulut yedeklerindeki kayıt sayılarını gösterir. Eski adreste tarayıcıya kayıtlı bilgiler otomatik taşınmaz. Bir sayı eksik görünüyorsa gerçek uygulamaya geçiş yapılmamalıdır.</small></p>
+</section>
+<footer><a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/sifre-yenile.html">Şifremi unuttum</a><a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/">Çalışan EmlakCRM'yi aç</a></footer>
+</section></main>
+<script type="module" src="./assets/hesap-testi.js"></script>
+</body></html>
