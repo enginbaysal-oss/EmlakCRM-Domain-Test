@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="tr"><head><script src="./preview-guard.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portföy ve Müşteri Kurtarma | EmlakCRM</title>
+<style>
+:root{font:15px/1.5 system-ui,Segoe UI,Arial,sans-serif;color:#183950;background:#edf4f8}
+*{box-sizing:border-box}body{margin:0;padding:12px}main{max-width:860px;margin:10px auto;padding:22px;background:#fff;border-radius:15px;box-shadow:0 8px 25px #153b5b19}
+h1{font-size:23px;margin:8px 0}h2{font-size:18px;margin:28px 0 8px}p{line-height:1.65}.muted,small{color:#5b7182}.note{background:#eaf4fb;border-left:4px solid #14779a;padding:12px;border-radius:8px}
+.warn{background:#fff5e8;border-left:4px solid #d58627;padding:12px;border-radius:8px}
+.ok{background:#eaf8ef;border-left:4px solid #128056;padding:12px;border-radius:8px}
+.err{background:#fff0ee;border-left:4px solid #c23636;padding:12px;border-radius:8px}
+button,.back{display:inline-block;background:#f39222;color:#183650;border:0;border-radius:10px;padding:11px 14px;font:750 14px system-ui;text-decoration:none;cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}button.primary{background:#167b62;color:white}
+.back{background:#e9f2f6}.bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+#search{font:inherit;width:100%;padding:12px;border:1px solid #b3c8d4;border-radius:10px}
+.stats{background:#eef6f9;color:#214960;border-radius:9px;padding:10px;font-weight:650}
+.rows{display:grid;gap:8px;margin:10px 0}.item{display:flex;align-items:flex-start;gap:12px;padding:11px;border:1px solid #dbe5ed;border-radius:11px;background:#fafdff;cursor:pointer}
+.item input{width:20px;height:20px;flex:none;margin:4px 0 0;accent-color:#168765}
+.item strong{display:block;font-size:15px}.item small{display:block;font-size:12px}
+[hidden]{display:none!important}.checkrow{display:flex;align-items:center;gap:10px;margin:14px 0;font-weight:650}
+.checkrow input{width:19px;height:19px;accent-color:#168765}
+@media(max-width:600px){main{padding:14px;margin:0}h1{font-size:21px}.bar button{width:100%}}
+</style></head><body><main>
+<a class="back" href="./index.html#account">← EmlakCRM'ye Dön</a>
+<h1>🔍 Portföy ve Müşteri Kurtarma</h1>
+<p class="warn">Bu ekran yalnızca <strong>eski portföyleri ve Alıcı/Satıcı müşterilerini</strong> inceler. Ajanda, ofis ve şablonlara dokunmaz. Eski ortak kayıtlar başka kullanıcılara veya denemelere ait olabilir: <strong>sadece sana ait olanları seç.</strong></p>
+<p>Aynı bilgisayarın, eski verilerin saklandığı <strong>aynı Chrome profiliyle</strong> açılmalı. Tarayıcı verilerini temizleme ve mevcut kayıtları silme.</p>
+<p id="status" class="note" role="status" aria-live="polite">Hesap doğrulanıyor…</p>
+<section id="content" hidden>
+<div class="bar"><button id="scan" type="button">Yeniden Tara</button><button id="backup" type="button">⬇ Önce Güvenlik Kopyasını İndir</button></div>
+<p class="muted">Güvenlik kopyası bu bilgisayara indirilir, sunucuya gönderilmez. Kopyayı güvenli yerde sakla.</p>
+<label for="search"><strong>Portföy / müşteri adı ara</strong></label>
+<input id="search" type="search" placeholder="Örneğin: Muradiye, Soma veya müşteri adı">
+<h2>1. Eski portföyler</h2><p id="portfolioStats" class="stats"></p><div id="portfolioList" class="rows"></div>
+<h2>2. Eski Alıcı / Satıcı müşteriler</h2><p id="customerStats" class="stats"></p><div id="customerList" class="rows"></div>
+<p id="selected" class="stats" role="status" aria-live="polite"></p>
+<label class="checkrow"><input type="checkbox" id="backupConfirmed">Güvenlik kopyasını indirdim; seçtiğim kayıtların bana ait olduğunu kontrol ettim.</label>
+<div class="bar"><button id="restore" type="button" class="primary" disabled>Seçtiklerimi Kendi Hesabıma Kurtar</button></div>
+<p id="outcome" role="status" aria-live="polite"></p>
+<p class="warn">Aktarım <strong>yalnızca kendi hesabının bu tarayıcıdaki yerel kayıtlarına</strong> yapılır. Başka abonelere, ofis paylaşımına veya Supabase müşteri tablolarına hiçbir veri gönderilmez. Mevcut kayıtlar korunur. Aynı kimliğe sahip ama farklı içerikli kayıtlar güvenlik için aktarılmaz.</p>
+</section></main>
+<script>
+"use strict";
+const API="https://tffvwxskvjuxoekwgdef.supabase.co",PUB="sb_publishable_ADLnhwviFBqWtBkq94Adag_ULlAuzUe";
+const $=id=>document.getElementById(id);
+const baseNames=["emlakcrm_portfoy_rapor_v1","emlakcrm_demo_v1"];
+let verified=null,candidates=[],picked=new Set(),scanState=null,backupDownloaded=false;
+function normalized(v){return String(v??"").trim().toLocaleLowerCase("tr-TR").replace(/\s+/g," ")}
+function safe(v,max=170){return String(v??"").trim().slice(0,max)}
+function readJSON(raw){if(raw===null)return null;try{return JSON.parse(raw)}catch{return null}}
+function isObject(o){return !!o&&typeof o==="object"&&!Array.isArray(o)}
+function statusMessage(text,cls="note"){$("status").className=cls;$("status").textContent=text}
+function ownedKeys(uid){return {crm:"emlakcrm_demo_v1__owner_"+uid,port:"emlakcrm_portfoy_rapor_v1__owner_"+uid}}
+function oldKeys(){return baseNames.flatMap(x=>[x,x+"__owner_anonymous"])}
+function legacyCandidates(){
+ const output=[];
+ for(const key of oldKeys()){
+  const raw=localStorage.getItem(key),obj=readJSON(raw);
+  if(!isObject(obj))continue;
+  const kind=key.startsWith("emlakcrm_portfoy_")?"portfolio":"customer";
+  const collection=kind==="portfolio"?obj.portfolios:obj.clients;
+  if(!Array.isArray(collection))continue;
+  for(const entry of collection){
+   if(!isObject(entry)||!String(entry.id??"").trim())continue;
+   if(kind==="portfolio"){
+    const title=safe(entry.title||entry.name);
+    if(!title)continue;
+    output.push({kind,key,entry,title,detail:safe(entry.location||entry.address||"Konum belirtilmedi"),identifier:String(entry.id)});
+   }else{
+    const type=safe(entry.type,35);
+    if(!["Alıcı","Satıcı"].includes(type))continue;
+    const title=safe(entry.name);
+    if(!title)continue;
+    output.push({kind,key,entry,title,detail:type,identifier:String(entry.id)});
+   }
+  }
+ }
+ const seen=new Set();
+ return output.filter(x=>{
+  const ident=x.kind+"|"+x.identifier+"|"+normalized(x.title)+"|"+normalized(x.detail);
+  if(seen.has(ident))return false;seen.add(ident);return true;
+ }).map((x,i)=>({...x,index:i}));
+}
+function render(){
+ const query=normalized($("search").value);
+ for(const [kind,listId,statsId,label] of [["portfolio","portfolioList","portfolioStats","portföy"],["customer","customerList","customerStats","Alıcı/Satıcı"]]){
+  const arr=candidates.filter(x=>x.kind===kind),visible=arr.filter(x=>!query||normalized(x.title+" "+x.detail).includes(query));
+  $(statsId).textContent=arr.length+" "+label+" bulundu • "+arr.filter(x=>picked.has(x.index)).length+" seçildi.";
+  const list=$(listId);list.replaceChildren();
+  for(const c of visible){
+   const row=document.createElement("label");row.className="item";
+   const check=document.createElement("input");check.type="checkbox";check.checked=picked.has(c.index);
+   check.onchange=()=>{check.checked?picked.add(c.index):picked.delete(c.index);updateSelection()};
+   const content=document.createElement("span"),head=document.createElement("strong"),desc=document.createElement("small");
+   head.textContent=c.title;
+   desc.textContent=c.detail+" • "+(c.key.includes("__owner_anonymous")?"Eski anonim alan":"Eski ortak kayıt");
+   content.append(head,desc);row.append(check,content);list.append(row);
+  }
+  if(!visible.length){const p=document.createElement("p");p.className="muted";p.textContent=query?"Aramayla eşleşen kayıt yok.":"Bu bölümde eski kayıt bulunamadı.";list.appendChild(p)}
+ }
+ updateSelection();
+}
+function updateSelection(){
+ const ports=candidates.filter(x=>picked.has(x.index)&&x.kind==="portfolio").length;
+ const clients=candidates.filter(x=>picked.has(x.index)&&x.kind==="customer").length;
+ $("selected").textContent=ports+" portföy ve "+clients+" Alıcı/Satıcı kaydı seçildi.";
+ $("restore").disabled=!verified||!backupDownloaded||!$("backupConfirmed").checked||!(ports+clients);
+}
+function scan(){
+ if(!verified)return;
+ picked.clear();backupDownloaded=false;$("backupConfirmed").checked=false;
+ candidates=legacyCandidates();
+ const keys=ownedKeys(verified.id),read={};
+ for(const key of [...oldKeys(),keys.crm,keys.port])read[key]=localStorage.getItem(key);
+ scanState=read;
+ $("outcome").textContent="";
+ render();statusMessage("Tarama tamamlandı. Hangi portföyün veya müşterinin sana ait olduğunu başlık ve adından seçebilirsin.","ok");
+}
+async function checkIdentity(){
+ const session=readJSON(sessionStorage.getItem("emlakcrm_auth_session_v1")||localStorage.getItem("emlakcrm_auth_remember_v1"));
+ if(!session?.access_token)throw Error("Önce ana EmlakCRM ekranında süper yönetici hesabına giriş yap.");
+ const headers={apikey:PUB,Authorization:"Bearer "+session.access_token};
+ const r=await fetch(API+"/auth/v1/user",{headers,cache:"no-store"});
+ if(!r.ok)throw Error("Oturum doğrulanamadı. Ana EmlakCRM'de yeniden giriş yap.");
+ const user=await r.json();
+ if(!user?.id)throw Error("Hesap kimliği bulunamadı.");
+ const active=localStorage.getItem("emlakcrm_active_account_v1");
+ if(active!==user.id)throw Error("Bu tarayıcıdaki aktif hesap kimliği uyuşmuyor. Başka hesaba aktarım engellendi.");
+ const a=await fetch(API+"/rest/v1/emlakcrm_super_admins?select=user_id&user_id=eq."+encodeURIComponent(user.id)+"&limit=1",{headers,cache:"no-store"});
+ if(!a.ok)throw Error("Yönetici yetkisi doğrulanamadı.");
+ const admins=await a.json();
+ if(!Array.isArray(admins)||!admins.some(x=>x.user_id===user.id))throw Error("Kurtarma yalnızca doğrulanmış süper yönetici hesabında açılabilir.");
+ return user.id;
+}
+function existing(raw,prop){
+ if(raw===null)return prop==="clients"?{clients:[],tasks:[],offices:[],members:[]}:{portfolios:[]};
+ const val=readJSON(raw);
+ if(!isObject(val)||!Array.isArray(val[prop]))throw Error("Mevcut yerel "+prop+" kayıtları bozuk; üzerine yazılmadı.");
+ return val;
+}
+function saveFile(file,content){
+ const blob=new Blob([JSON.stringify(content,null,2)],{type:"application/json;charset=utf-8"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=file;
+ document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),120000);
+}
+function backup(){
+ if(!verified||!scanState)return;
+ const name="EmlakCRM_Kurtarma_Guvenlik_Kopyasi_"+new Date().toISOString().slice(0,10)+".json";
+ saveFile(name,{format:"EmlakCRM-Kurtarma-Koruma-Kopyasi",version:1,createdAt:new Date().toISOString(),owner:verified.id,origin:location.origin,
+  warning:"Bu dosya kişisel veriler içerebilir. Başkasına göndermeyin.",
+  values:scanState});
+ backupDownloaded=true;
+ $("outcome").className="note";$("outcome").textContent="Yedek indirme başlatıldı. İndirilenler klasöründe dosyayı gördüğünden emin ol; ardından kutuyu işaretle.";
+ updateSelection();
+}
+async function restore(){
+ if($("restore").disabled||!verified||!scanState)return;
+ $("restore").disabled=true;
+ try{
+  if(!backupDownloaded||!$("backupConfirmed").checked)throw Error("Önce güvenlik kopyasını indirmelisin.");
+  const userId=await checkIdentity();
+  if(userId!==verified.id)throw Error("Başka kullanıcıya aktarım engellendi.");
+  for(const k of oldKeys()){if(localStorage.getItem(k)!==scanState[k])throw Error("Eski kayıtlar başka sekmede değişti. Yeniden tara.");}
+  const keys=ownedKeys(userId),beforeCrm=localStorage.getItem(keys.crm),beforePort=localStorage.getItem(keys.port);
+  if(beforeCrm!==scanState[keys.crm]||beforePort!==scanState[keys.port])throw Error("Mevcut veriler başka sekmede değişti. Yeniden tara.");
+  const crm=existing(beforeCrm,"clients"),port=existing(beforePort,"portfolios");
+  const clients=crm.clients.slice(),portfolios=port.portfolios.slice();
+  let addedClients=0,addedPorts=0,skipped=0,collisions=0;
+  for(const c of candidates.filter(x=>picked.has(x.index))){
+   const v=c.entry;
+   const entries=c.kind==="customer"?clients:portfolios;
+   const sameId=entries.find(x=>String(x?.id??"")===c.identifier);
+   if(sameId){skipped++;if(JSON.stringify(sameId)!==JSON.stringify(v))collisions++;continue}
+   if(c.kind==="customer"){
+    if(clients.some(x=>normalized(x?.name)===normalized(v.name)&&normalized(x?.phone)===normalized(v.phone)&&!!normalized(v.phone))){skipped++;continue}
+    clients.push(v);addedClients++;
+   }else{
+    if(portfolios.some(x=>normalized(x?.title)===normalized(v.title)&&normalized(x?.location)===normalized(v.location))){skipped++;continue}
+    portfolios.push(v);addedPorts++;
+   }
+  }
+  if(!addedClients&&!addedPorts){
+   $("outcome").className="note";$("outcome").textContent="Eklenecek yeni kayıt yok. "+skipped+" mevcut/çakışan kayıt korundu. Hiçbir veri değişmedi.";return;
+  }
+  if(!confirm(addedPorts+" portföy ve "+addedClients+" Alıcı/Satıcı kaydı sadece SENİN yerel hesabına eklensin mi? "+skipped+" mükerrer/çakışan kayıt atlanacak. Mevcut kayıtlar silinmeyecek."))return;
+  if(await checkIdentity()!==userId)throw Error("Hesap değişti.");
+  if(localStorage.getItem(keys.crm)!==beforeCrm||localStorage.getItem(keys.port)!==beforePort)throw Error("Mevcut kayıtlar değişti, işlem iptal.");
+  const nextCrm=JSON.stringify({...crm,clients}),nextPort=JSON.stringify({...port,portfolios});
+  let changedCrm=false,changedPort=false;
+  try{
+   if(addedClients){localStorage.setItem(keys.crm,nextCrm);changedCrm=true}
+   if(addedPorts){localStorage.setItem(keys.port,nextPort);changedPort=true}
+  }catch(err){
+   if(changedPort&&localStorage.getItem(keys.port)===nextPort){try{beforePort===null?localStorage.removeItem(keys.port):localStorage.setItem(keys.port,beforePort)}catch{}}
+   if(changedCrm&&localStorage.getItem(keys.crm)===nextCrm){try{beforeCrm===null?localStorage.removeItem(keys.crm):localStorage.setItem(keys.crm,beforeCrm)}catch{}}
+   throw err;
+  }
+  const result=addedPorts+" portföy, "+addedClients+" Alıcı/Satıcı kaydı kurtarıldı; "+skipped+" mükerrer/çakışan kayıt atlandı.";
+  $("outcome").className="ok";$("outcome").textContent=result+" Şimdi ana EmlakCRM sayfasını yeniden aç. Yalnızca bu tarayıcıdaki kendi hesabına eklendi.";
+  statusMessage("Kurtarma kaydedildi. Diğer hesaplara veri gönderilmedi.","ok");
+  // A second write must be based on a fresh snapshot; disable further restores.
+  scanState=null;backupDownloaded=false;$("backupConfirmed").checked=false;
+ }catch(e){$("outcome").className="err";$("outcome").textContent="Aktarım tamamlanmadı: "+String(e.message||e)}
+ finally{updateSelection()}
+}
+$("scan").onclick=scan;$("search").oninput=render;$("backup").onclick=backup;
+$("backupConfirmed").onchange=updateSelection;$("restore").onclick=restore;
+(async()=>{try{const id=await checkIdentity();verified={id};$("content").hidden=false;scan()}catch(e){statusMessage(String(e.message||e),"err")}})();
+</script></body></html>
