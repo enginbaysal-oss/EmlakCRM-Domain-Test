@@ -1,0 +1,62 @@
+name: Verify account migration test page
+on:
+  push:
+    paths:
+      - '.github/workflows/account-test-health.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Check JavaScript modules
+        run: |
+          deno check assets/hesap-testi.js emlakcrm-cloud-restore-preview.js
+      - name: Check published files without entering any user credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            echo "PUBLISH_CHECK_ATTEMPT=${attempt}"
+            page="$(mktemp)"
+            helper="$(mktemp)"
+            script="$(mktemp)"
+            if curl -fsSL --max-time 12 'https://emlkcrm.com.tr/hesap-testi.html?v=11nov26' -o "$page" &&
+               curl -fsSL --max-time 12 'https://emlkcrm.com.tr/emlakcrm-cloud-restore-preview.js?v=11nov26' -o "$helper" &&
+               curl -fsSL --max-time 12 'https://emlkcrm.com.tr/assets/hesap-testi.js?v=11nov26' -o "$script" &&
+               grep -q 'Hesap ve bulut yedek kontrolü' "$page" &&
+               grep -q 'type="module" src="./assets/hesap-testi.js"' "$page" &&
+               grep -q 'readCloudBackupOverview' "$helper" &&
+               grep -q 'readCloudBackupOverview' "$script" &&
+               ! grep -Eq 'localStorage|sessionStorage|document.cookie' "$script" &&
+               ! grep -Eq 'DELETE|PATCH|PUT|POST' "$helper"; then
+              echo 'ACCOUNT_TEST_PAGE_OK: HTML and JS modules published and storage-free'
+              break
+            fi
+            if [ "$attempt" -eq 6 ]; then echo 'ACCOUNT_TEST_PAGE_NOT_READY'; exit 1; fi
+            sleep 8
+          done
+          curl -fsSL --max-time 12 'https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html' -o /dev/null
+          echo 'PRODUCTION_CRM_OK: old CRM homepage preserved'
+      - name: Check new-domain Supabase Auth and read-only backup preflights
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in '/auth/v1/token?grant_type=password' '/rest/v1/emlakcrm_user_backups?select=kind,item_count,created_at&limit=1'; do
+            echo "PREFLIGHT_PATH=${path%%\?*}"
+            headers="$(mktemp)"
+            curl -sS -D "$headers" -o /dev/null -X OPTIONS --max-time 12 \
+             -H 'Origin: https://emlkcrm.com.tr' \
+             -H 'Access-Control-Request-Method: GET' \
+             -H 'Access-Control-Request-Headers: authorization,apikey,content-type' \
+             "https://tffvwxskvjuxoekwgdef.supabase.co${path}"
+            grep -iE '^(HTTP/|access-control-allow-origin:|access-control-allow-methods:)' "$headers" | tr -d '\r'
+            grep -qi '^access-control-allow-origin: \*\|^access-control-allow-origin: https://emlkcrm.com.tr' "$headers"
+          done
+          echo 'SUPABASE_CORS_PREFLIGHT_OK'
