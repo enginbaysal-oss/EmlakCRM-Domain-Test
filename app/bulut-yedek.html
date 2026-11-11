@@ -28,7 +28,7 @@ button:disabled{opacity:.6;cursor:not-allowed}.back{background:#e8f1f6}
 <h2>Portföy yedeklerim</h2><div class="collection" id="portfolios"></div>
 <h2>Alıcı / Satıcı / Diğer Müşteri yedeklerim</h2><div class="collection" id="clients"></div>
 <h2>🔗 Çekilen Portföy yedeklerim</h2><div class="collection" id="external_portfolios"></div>
-<section id="preview" hidden><h2 id="previewTitle">Bu yedeğin içeriği</h2><p id="previewSource" class="warn"></p><p class="muted">Yalnızca sana ait olduğundan emin olduğun kayıtları işaretle. Deneme kayıtlarını seçme. Müşteri telefonları burada gösterilmez.</p><div class="collection" id="previewRows"></div><p id="previewCount" class="muted">Henüz seçim yok.</p><div class="bar"><button type="button" id="restoreSelected" disabled>Seçilenleri Kendi Hesabıma Ekle</button></div></section><p id="result" role="status"></p>
+<section id="preview" hidden><h2 id="previewTitle">Bu yedeğin içeriği</h2><p id="previewSource" class="warn"></p><p class="muted">Yalnızca sana ait olduğundan emin olduğun kayıtları işaretle. Deneme kayıtlarını seçme. Müşteri telefonları burada gösterilmez.</p><div class="bar"><button type="button" id="selectAllPreview" style="background:#176f57;color:#fff">✓ Bu Yedekteki Tüm Kayıtları Seç</button><button type="button" id="selectNonePreview" class="back">Seçimi Temizle</button></div><div class="collection" id="previewRows"></div><p id="previewCount" class="muted">Henüz seçim yok.</p><div class="bar"><button type="button" id="restoreSelected" disabled>Seçilenleri Kendi Hesabıma Ekle</button></div></section><p id="result" role="status"></p>
 <p class="muted">Bu özellik CRM müşteri kayıtlarını, Portföy Yönetimi kayıtlarını ve Çekilen Portföyler listesini kapsar. PDF İmzala arşivi, Emlak Asistanı şablonları, ajanda ve görsel boyutu sınırını aşan kayıtlar bu yedeklere otomatik dâhil edilmez. Eski sürümler silinmez.</p>
 </section></main>
 <script>
@@ -137,6 +137,14 @@ async function showPreview(version){
    detail.textContent=String(version.kind==="clients"?(x?.type||"Müşteri"):(x?.location||x?.kind||"Konum belirtilmedi")).slice(0,150);
    contents.append(head,detail);label.append(input,contents);root.append(label);
   });
+  $("selectAllPreview").onclick=()=>{
+   root.querySelectorAll('input[type="checkbox"]').forEach(el=>{el.checked=true});
+   updatePreviewSelection();
+  };
+  $("selectNonePreview").onclick=()=>{
+   root.querySelectorAll('input[type="checkbox"]').forEach(el=>{el.checked=false});
+   updatePreviewSelection();
+  };
   $("restoreSelected").onclick=()=>void restore(version);
   $("preview").hidden=false;updatePreviewSelection();
   $("preview").scrollIntoView({behavior:"smooth",block:"start"});
