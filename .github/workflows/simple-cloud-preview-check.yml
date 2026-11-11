@@ -1,0 +1,59 @@
+name: Verify simplified cloud restore preview
+on:
+  push:
+    paths:
+      - '.github/workflows/simple-cloud-preview-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Verify isolated preview syntax and early write guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          deno check app/bulut-yedek-core.js app/bulut-yedek-sade.js
+          python3 - <<'PY'
+          from pathlib import Path
+          html=Path("app/bulut-yedek-kolay.html").read_text(encoding="utf-8")
+          js=Path("app/bulut-yedek-sade.js").read_text(encoding="utf-8")
+          assert '<head><script src="./preview-guard.js"></script>' in html
+          assert 'TEST ÖNİZLEMESİ' in html
+          assert 'id="date"' in html and 'id="restore"' in html
+          assert 'id="previewRows"' not in html
+          assert 'selectAllPreview' not in html
+          assert 'await ownBackups' in js
+          assert 'saveSafetyDownload' in js
+          assert 'Bu sırada aktif hesap değişti.' in js
+          assert 'mergeAll(local.data,backups)' in js
+          print('SIMPLE_RESTORE_UI_SAFE_STATIC_OK')
+          PY
+      - name: Verify live HTTPS path, scripts, old CRM and test landing
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5 6; do
+            html="$(mktemp)"; a="$(mktemp)"; b="$(mktemp)"
+            if curl -fsSL --max-time 12 'https://emlkcrm.com.tr/app/bulut-yedek-kolay.html?v=20261111' -o "$html" &&
+               curl -fsSL --max-time 12 'https://emlkcrm.com.tr/app/bulut-yedek-sade.js?v=20261111' -o "$a" &&
+               curl -fsSL --max-time 12 'https://emlkcrm.com.tr/app/bulut-yedek-core.js?v=20261111' -o "$b" &&
+               grep -q 'TEST ÖNİZLEMESİ' "$html" &&
+               grep -q 'bulut-yedek-sade.js' "$html" &&
+               grep -q 'mergeAll(local.data,backups)' "$a" &&
+               grep -q 'buildRestorePoints' "$b"; then
+              echo 'SIMPLE_RESTORE_PREVIEW_HTTPS_OK'
+              break
+            fi
+            if [ "$i" -eq 6 ]; then exit 1; fi
+            sleep 8
+          done
+          curl -fsSL --max-time 12 'https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html' -o /dev/null
+          curl -fsSL --max-time 12 'https://emlkcrm.com.tr/app/index.html' -o /dev/null
+          echo 'ORIGINAL_CRM_AND_APP_PREVIEW_ACCESSIBLE'
