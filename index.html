@@ -1,21 +1,109 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
-<title>EmlakCRM | Alan Adı Güvenli Bağlantı Testi</title>
-<style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:#eff5f9;color:#17354e;font:16px/1.55 system-ui,Segoe UI,Arial,sans-serif}
-main{background:#fff;max-width:630px;width:100%;padding:34px;border-radius:18px;box-shadow:0 12px 32px #12375119;border:1px solid #dae5ec}
-.pill{display:inline-flex;padding:7px 12px;background:#e5f4f0;color:#166d57;border-radius:999px;font-weight:750;font-size:13px}
-h1{font-size:25px;line-height:1.25;margin:18px 0 12px}p{color:#516678}
-a{display:inline-block;background:#e57c19;color:#fff;font-weight:750;text-decoration:none;padding:12px 15px;border-radius:9px;margin-top:10px}
-small{color:#708091}
-</style></head>
-<body><main>
-<span class="pill">EmlakCRM · Sadece alan adı testi</span>
-<h1>Güvenli bağlantı kontrol sayfası</h1>
-<p>Bu sayfayı <strong>https://emlkcrm.com.tr</strong> adresinden, tarayıcıda sertifika uyarısı olmadan görüyorsanız alan adının HTTPS bağlantısı çalışıyor demektir.</p>
-<p>Bu ekran gerçek EmlakCRM uygulaması değildir. Burada giriş, ödeme veya müşteri verisi işlemi yapılmaz.</p>
-<a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/">Çalışan EmlakCRM uygulamasını aç</a>
-<p><small>Test sayfası: 11 Kasım 2026 · Giriş bilgileri veya kişisel veri toplamaz.</small></p>
-</main></body></html>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#153e5a">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="EmlakCRM: Gayrimenkul danışmanları için müşteri, portföy ve emlak işlemleri tek merkezde.">
+  <title>EmlakCRM | Gayrimenkul İşleriniz Tek Merkezde</title>
+  <style>
+    :root{--navy:#153e5a;--ink:#1b3b50;--orange:#ed861d;--soft:#f3f8fb;--muted:#5a7080;--line:#dfebf1}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;color:var(--ink);font:16px/1.52 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:#f8fbfd}
+    a{color:inherit}
+    .wrap{max-width:1120px;margin:auto;padding:0 24px}
+    header{background:#fff;border-bottom:1px solid var(--line)}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:82px}
+    .logo{font-weight:900;font-size:26px;letter-spacing:-1px;text-decoration:none;color:var(--navy)}
+    .logo span{color:var(--orange)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:11px;padding:13px 21px;min-height:46px;font-weight:800;text-align:center;transition:transform .18s}
+    .btn:hover,.btn:focus-visible{transform:translateY(-2px)}
+    .btn-primary{background:var(--orange);color:#193349;box-shadow:0 5px 0 #bc6417}
+    .btn-white{background:#fff;border:2px solid #d7e6f0;color:var(--navy)}
+    .hero{background:radial-gradient(circle at 82% 18%,#287a99 0%,transparent 38%),linear-gradient(125deg,#11314b 0%,#1a587c 100%);color:#fff}
+    .hero-inner{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:52px;align-items:center;padding-top:78px;padding-bottom:82px}
+    .eyebrow{display:inline-block;font-size:13px;font-weight:650;padding:7px 12px;border-radius:99px;background:#ffffff20;border:1px solid #ffffff40}
+    h1{font-size:clamp(35px,5vw,58px);letter-spacing:-1.5px;line-height:1.13;margin:23px 0 19px}
+    h1 span{color:#ffbc72}
+    .hero p{color:#daebf5;max-width:650px;font-size:18px;margin:0}
+    .actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:30px}
+    .summary{border-radius:18px;border:1px solid #ffffff45;background:#ffffff14;padding:26px;box-shadow:0 14px 30px #081c3060}
+    .summary h2{font-size:22px;margin:0 0 13px}
+    .summary ul{list-style:none;padding:0;margin:0}
+    .summary li{border-top:1px solid #ffffff30;padding:11px 0;display:flex;gap:10px}
+    .summary li:before{content:"✓";font-weight:900;color:#ffbe80}
+    section.modules{padding:60px 0}
+    section.modules h2{font-size:31px;letter-spacing:-.5px;margin:0 0 7px}
+    .intro{color:var(--muted);max-width:720px;margin:0 0 29px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+    .item{background:white;border:1px solid var(--line);border-radius:15px;padding:24px;box-shadow:0 8px 20px #1037510a}
+    .emoji{font-size:28px}
+    .item h3{font-size:18px;margin:8px 0}
+    .item p{font-size:14px;color:var(--muted);margin:0}
+    .safe{margin-top:30px;border-radius:12px;padding:19px 22px;background:#ebf5f7;border-left:4px solid #248a94;color:#294c5c;font-size:14px}
+    .safe strong{display:block;font-size:16px;margin-bottom:5px}
+    footer{background:#fff;border-top:1px solid var(--line);padding:23px 0;color:var(--muted);font-size:13px}
+    .foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    @media(max-width:780px){.hero-inner{grid-template-columns:1fr;padding-top:55px;padding-bottom:60px}.summary{display:none}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:540px){.wrap{padding:0 17px}.logo{font-size:22px}.top{min-height:75px}.top .btn{padding:10px 13px;font-size:14px}.hero p{font-size:16px}.grid{grid-template-columns:1fr}.actions .btn{width:100%}section.modules{padding:42px 0}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap top">
+      <a class="logo" href="https://emlkcrm.com.tr/" aria-label="EmlakCRM ana sayfa">Emlak<span>CRM</span></a>
+      <a class="btn btn-primary" href="https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html#account">Uygulamaya Giriş</a>
+    </div>
+  </header>
+  <main>
+    <div class="hero">
+      <div class="wrap hero-inner">
+        <div>
+          <span class="eyebrow">Gayrimenkul danışmanları için dijital çalışma alanı</span>
+          <h1>Emlak işlerinizi <span>tek merkezden</span> yönetin.</h1>
+          <p>Müşteri, portföy, ajanda ve emlak işlemlerinizi bir araya getiren pratik çalışma alanı.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html#account">EmlakCRM’yi Aç</a>
+            <a class="btn btn-white" href="#moduller">Modülleri Keşfet</a>
+          </div>
+        </div>
+        <aside class="summary" aria-label="Öne çıkan özellikler">
+          <h2>Daha düzenli iş akışı</h2>
+          <ul>
+            <li>Müşteri ve portföy yönetimi</li>
+            <li>Tapu ve masraf hesaplamaları</li>
+            <li>Belgeler ve imza işlemleri</li>
+            <li>Gayrimenkul sunum araçları</li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+    <section class="modules" id="moduller">
+      <div class="wrap">
+        <h2>İhtiyacınız olan araçlar bir arada</h2>
+        <p class="intro">Sık kullandığınız gayrimenkul işlemlerine tek çalışma alanından ulaşın.</p>
+        <div class="grid">
+          <article class="item"><div class="emoji" aria-hidden="true">🏠</div><h3>Müşteri ve Portföy</h3><p>Alıcı-satıcı kayıtları, portföy takibi ve eşleştirme.</p></article>
+          <article class="item"><div class="emoji" aria-hidden="true">🗓️</div><h3>Ajanda</h3><p>Görüşmeleri, görevleri ve takip edilecek işleri planlayın.</p></article>
+          <article class="item"><div class="emoji" aria-hidden="true">📄</div><h3>Emlak Asistanı</h3><p>Belgeler, şablonlar ve danışmanlık iş akışları.</p></article>
+          <article class="item"><div class="emoji" aria-hidden="true">🧮</div><h3>TapuMatik</h3><p>Tapu harcı, hizmet bedeli, alıcı-satıcı toplamları.</p></article>
+          <article class="item"><div class="emoji" aria-hidden="true">✍️</div><h3>PDF İmzala</h3><p>PDF belgeleri için imza ve paylaşım işlemleri.</p></article>
+          <article class="item"><div class="emoji" aria-hidden="true">🚁</div><h3>Drone Çekim</h3><p>Gayrimenkul tanıtımında görsel sunum araçları.</p></article>
+        </div>
+        <div class="safe">
+          <strong>Güvenli geçiş aşamasındayız</strong>
+          Bu yeni alan adı EmlakCRM’nin karşılama sayfasıdır. Kullanıcı oturumları ve kayıtlar etkilenmesin diye giriş ve uygulama işlemleri şimdilik mevcut güvenli GitHub Pages adresinden açılır. Bu sayfa şifre, ödeme veya müşteri bilgisi toplamaz.
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap foot">
+      <span>© 2026 EmlakCRM · Gayrimenkul danışmanları için dijital araçlar</span>
+      <a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html#account">Mevcut uygulamaya güvenli giriş</a>
+    </div>
+  </footer>
+</body>
+</html>
