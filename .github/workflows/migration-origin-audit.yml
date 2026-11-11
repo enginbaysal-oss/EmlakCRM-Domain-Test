@@ -25,7 +25,7 @@ jobs:
                 -H "Access-Control-Request-Method: POST" \
                 -H "Access-Control-Request-Headers: authorization,apikey,content-type" \
                 -D /tmp/cors_headers "${api}/${endpoint}"
-              sed -nE '/^HTTP\\//p; /^[Aa]ccess-[Cc]ontrol-[Aa]llow-[Oo]rigin:/p; /^[Aa]ccess-[Cc]ontrol-[Aa]llow-[Mm]ethods:/p; /^[Vv]ary:/p' /tmp/cors_headers | tr -d '\r'
+              grep -iE '^(HTTP/|access-control-allow-origin:|access-control-allow-methods:|vary:)' /tmp/cors_headers | tr -d '\r' || true
             done
           done
           echo 'AUDIT COMPLETE: preflight requests only; no user, payment or subscription data accessed'
