@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="tr"><head><script src="./preview-guard.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><title>EmlakCRM | Buluttan Geri Yükle</title>
+<style>
+:root{font:16px/1.55 system-ui,Segoe UI,Arial,sans-serif;color:#193b50;background:#edf5fa}
+*{box-sizing:border-box}body{margin:0;padding:17px;background:linear-gradient(150deg,#edf5fa,#fafcfe);min-height:100vh}
+main{max-width:660px;margin:12px auto;background:white;border:1px solid #d8e5ed;border-radius:17px;padding:27px;box-shadow:0 13px 35px #143e5918}
+h1{font-size:27px;margin:13px 0 12px;line-height:1.2}p{color:#536b7e}
+.back{display:inline-flex;align-items:center;color:#1b6281;background:#e9f2f7;border-radius:10px;padding:11px 14px;font-weight:800;text-decoration:none}
+label{font-weight:800;display:block;margin:17px 0 8px}
+select{display:block;width:100%;min-height:53px;padding:13px;border:1px solid #aac6d7;background:#fcfeff;border-radius:10px;font:inherit;color:#143b52}
+button{font:inherit;font-weight:800;cursor:pointer;border:0;border-radius:11px;min-height:51px;padding:12px 16px}
+button:disabled{opacity:.6;cursor:not-allowed}
+.primary{width:100%;background:#15745a;color:white;font-size:17px;margin:17px 0 5px}
+.minor{background:#e9f2f7;color:#1e5673;font-size:13px;min-height:38px}
+.notice,.warn,.good,.bad{margin:16px 0;padding:13px 15px;background:#eaf4f9;border-left:4px solid #2a849d;border-radius:9px;line-height:1.55;overflow-wrap:anywhere}
+.good{background:#e8f7ec;border-color:#2b915f}.bad{background:#ffefeb;border-color:#bf4236}.warn{background:#fff4e5;border-color:#d88d28}
+#history[hidden]{display:none!important}
+#detail{display:block;margin:9px 0;color:#566e81;font-size:14px}
+#result:empty{display:none}
+.foot{font-size:13px;color:#647c8c;border-top:1px solid #e2eaf0;padding-top:15px;margin-top:22px}
+@media(max-width:540px){body{padding:10px}main{padding:22px 17px}h1{font-size:24px}}
+</style></head>
+<body><main>
+<a class="back" href="./index.html#account">← EmlakCRM'ye Dön</a>
+<h1>☁️ Buluttan Geri Yükle <small style="font-size:13px;color:#98601c">(TEST ÖNİZLEMESİ)</small></h1>
+<p>Buluta kaydedilmiş müşteri, portföy ve çekilen portföy kayıtlarını <strong>tek seferde</strong> geri getirebilirsiniz.</p>
+<div class="warn"><strong>Mevcut kayıtlarınız silinmez.</strong> Sistem eksik kayıtları ekler, aynı kayıtları ikinci kez oluşturmaz. İşleme başlamadan önce cihazınızın güvenlik yedeğini indirmeye çalışır.</div>
+<p id="status" class="notice" role="status" aria-live="polite">Hesabınız doğrulanıyor…</p>
+<section id="history" hidden>
+<label for="date">Yedek tarihi ve saati</label>
+<select id="date" aria-label="Geri yüklemek istediğiniz yedek tarihini seçin"></select>
+<small id="detail"></small>
+<button id="restore" type="button" class="primary" disabled>☁️ Tamamını Geri Yükle</button>
+<div style="text-align:right;margin-top:13px"><button id="reload" type="button" class="minor">↻ Tarihleri Yenile</button></div>
+<p id="result" role="status" aria-live="polite"></p>
+</section>
+<p class="foot">Seçtiğiniz tarih ve saate kadar kaydedilmiş, her veri türünün en son bulut sürümü kullanılır. Mevcut kayıtlar korunarak eksikler eklenir. PDF arşivi, drone videoları ve diğer cihaz-özel dosyalar bu bulut yedeklerine dahil değildir.</p>
+</main><script type="module" src="./bulut-yedek-sade.js"></script></body></html>
