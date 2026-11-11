@@ -1,0 +1,35 @@
+name: Test domain DNS and HTTPS (read-only)
+on:
+  push:
+    paths:
+      - '.github/workflows/ssl-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect GitHub Pages domain and TLS
+        shell: bash
+        run: |
+          set +e
+          for host in emlkcrm.com.tr www.emlkcrm.com.tr; do
+            echo "===== ${host} DNS ====="
+            dig @1.1.1.1 +short "$host" A
+            dig @1.1.1.1 +short "$host" CNAME
+            echo "===== ${host} HTTPS (certificate validation ON) ====="
+            curl -sSIL --max-time 15 "https://${host}/" | head -22
+            echo "curl_exit=${PIPESTATUS[0]}"
+            echo "===== ${host} CERT ====="
+            echo | timeout 15 openssl s_client -connect "${host}:443" -servername "${host}" 2>/dev/null | openssl x509 -noout -subject -issuer -dates -ext subjectAltName 2>&1 | head -22
+            echo "===== ${host} HTTP (diagnostic only) ====="
+            curl -sSI --max-time 15 "http://${host}/" | head -16
+          done
+          echo '===== GitHub Pages test site endpoint ====='
+          curl -sSIL --max-time 15 'https://enginbaysal-oss.github.io/EmlakCRM-Domain-Test/' | head -24
+          echo "curl_exit=${PIPESTATUS[0]}"
+          echo '===== Main app endpoint (should remain available) ====='
+          curl -sSIL --max-time 15 'https://enginbaysal-oss.github.io/EmlakCRM-Web/' | head -24
+          echo "curl_exit=${PIPESTATUS[0]}"
