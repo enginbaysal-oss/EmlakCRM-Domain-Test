@@ -1,0 +1,39 @@
+name: Verify published guarded EmlakCRM app preview
+on:
+  push:
+    paths:
+      - '.github/workflows/preview-app-live.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Verify HTTPS Pages preview and unmodified legacy site
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            echo "ATTEMPT=${attempt}"
+            index="$(mktemp)"; guard="$(mktemp)"; root="$(mktemp)"
+            if curl --fail --silent --show-error --location --max-time 12 "https://emlkcrm.com.tr/app/index.html?health=preview1" -o "$index" &&
+               curl --fail --silent --show-error --location --max-time 12 "https://emlkcrm.com.tr/app/preview-guard.js?health=preview1" -o "$guard" &&
+               curl --fail --silent --show-error --location --max-time 12 "https://emlkcrm.com.tr/?health=preview1" -o "$root" &&
+               grep -q '<head><script src="./preview-guard.js"></script>' "$index" &&
+               grep -q 'CRM_AUTH_RETURN_URL' "$index" &&
+               grep -q 'window.fetch=async' "$guard" &&
+               grep -q 'Emlak işlerinizi' "$root"; then
+              echo "GUARDED_PREVIEW_LIVE_OK: true HTTPS, correct UI and early network write guard"
+              break
+            fi
+            if [ "$attempt" -eq 6 ]; then echo "GUARDED_PREVIEW_NOT_READY"; exit 1; fi
+            sleep 8
+          done
+          for resource in 'app/portfoy-rapor.html' 'app/sifre-yenile.html' 'app/abonelik-satin-al.html' 'app/account-data-isolation.js' 'app/emlakcrm-cloud-backup.js' 'app/assets/emlakcrm-logo.svg'; do
+            curl --fail --silent --show-error --location --max-time 15 "https://emlkcrm.com.tr/${resource}" -o /dev/null
+            echo "OK_RESOURCE=${resource}"
+          done
+          curl --fail --silent --show-error --location --max-time 15 'https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html' -o /dev/null
+          echo 'LEGACY_PRODUCTION_CRM_OK'
