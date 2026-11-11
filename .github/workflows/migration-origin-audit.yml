@@ -1,0 +1,31 @@
+name: EmlakCRM migration origin compatibility check
+on:
+  push:
+    paths:
+      - '.github/workflows/migration-origin-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Compare CORS preflight for old and new origins (no user data)
+        shell: bash
+        run: |
+          set +e
+          api="https://tffvwxskvjuxoekwgdef.supabase.co/functions/v1"
+          for endpoint in emlakcrm-shopier-checkout emlakcrm-shopier-coupon emlakcrm-shopier-health emlakcrm-shopier-product emlakcrm-shopier-setup emlakcrm-checkout-start emlakcrm-checkout-status; do
+            echo "==== ${endpoint} ===="
+            for origin in "https://enginbaysal-oss.github.io" "https://emlkcrm.com.tr"; do
+              echo "-- origin: ${origin}"
+              curl -sS -o /dev/null --max-time 10 -X OPTIONS \
+                -H "Origin: ${origin}" \
+                -H "Access-Control-Request-Method: POST" \
+                -H "Access-Control-Request-Headers: authorization,apikey,content-type" \
+                -D /tmp/cors_headers "${api}/${endpoint}"
+              sed -nE '/^HTTP\\//p; /^[Aa]ccess-[Cc]ontrol-[Aa]llow-[Oo]rigin:/p; /^[Aa]ccess-[Cc]ontrol-[Aa]llow-[Mm]ethods:/p; /^[Vv]ary:/p' /tmp/cors_headers | tr -d '\r'
+            done
+          done
+          echo 'AUDIT COMPLETE: preflight requests only; no user, payment or subscription data accessed'
