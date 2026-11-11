@@ -1,0 +1,84 @@
+name: Prepare isolated CRM app snapshot (do not deploy)
+on:
+  push:
+    paths:
+      - '.github/workflows/prepare-crm-preview.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout isolated test repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Checkout exact reviewed CRM branch
+        uses: actions/checkout@v4
+        with:
+          repository: enginbaysal-oss/EmlakCRM-Web
+          ref: f93c3575b30e42f1ea3994a7e39116c2660ff388
+          path: _upstream_readonly
+          persist-credentials: false
+      - name: Build app preview under /app (no production changes)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "EmlakCRM Preview Builder"
+          git config user.email "actions@users.noreply.github.com"
+          git switch -C staging-app-snapshot-20261111
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          import re
+          src=Path('_upstream_readonly')
+          dest=Path('app')
+          if not src.is_dir() or not (src/'index.html').is_file():
+              raise SystemExit('CRM source missing; will not deploy')
+          guard=dest/'preview-guard.js'
+          if not guard.is_file():
+              raise SystemExit('Preview guard missing; will not deploy')
+          if 'window.fetch=async' not in guard.read_text(encoding='utf-8'):
+              raise SystemExit('Required no-write guard not found')
+          dest.mkdir(exist_ok=True)
+          # Match main site's public allowlist, not supabase secrets or repo sources.
+          num=0
+          for html in src.glob('*.html'):
+              source=html.read_text(encoding='utf-8')
+              if not re.search(r'<head(?:\s[^>]*)?>',source,flags=re.I):
+                  raise SystemExit('Cannot insert early guard into '+html.name)
+              source=re.sub(r'(<head(?:\s[^>]*)?>)', r'\1<script src="./preview-guard.js"></script>', source, count=1, flags=re.I)
+              if not re.search(r'<head[^>]*><script src="./preview-guard.js"></script>',source,flags=re.I):
+                  raise SystemExit('Guard not first element in head: '+html.name)
+              if html.name=='drone-cekim.html':
+                  # Drone relies on a separate protected public Mapbox build token.
+                  # The non-functional drone experience is not part of the staging proof.
+                  source=source.replace('const MAPBOX_PUBLIC_TOKEN="";','const MAPBOX_PUBLIC_TOKEN="";')
+              (dest/html.name).write_text(source,encoding='utf-8')
+              num+=1
+          for pattern in ('*.js','*.css','*.webmanifest'):
+              for f in src.glob(pattern):
+                  if f.name.startswith('emlakcrm-cloud-restore-preview'):
+                      continue
+                  shutil.copy2(f,dest/f.name)
+          public=src/'assets'
+          if public.is_dir():
+              shutil.copytree(public,dest/'assets',dirs_exist_ok=True)
+          # Only the test-repository guard is allowed to control network writes.
+          # The source checkout must never be copied to the Pages root.
+          assert 'window.fetch=async' in guard.read_text(encoding='utf-8')
+          assert (dest/'index.html').is_file()
+          assert not (dest/'CNAME').exists()
+          print('SAFE_APP_SNAPSHOT_READY: '+str(num)+' public HTML files')
+          PY
+          git add app
+          if git diff --cached --quiet; then
+            echo 'SNAPSHOT_UNCHANGED'
+          else
+            git commit -m 'Prepare guarded EmlakCRM static app at /app for domain smoke test'
+          fi
+          git push --force-with-lease origin HEAD:refs/heads/staging-app-snapshot-20261111
+          echo "SNAPSHOT_COMMIT=$(git rev-parse HEAD)"
+          echo 'STAGING_BRANCH_ONLY: main not touched, GitHub Pages not deployed'
