@@ -44,7 +44,7 @@ jobs:
           const calls=[];
           const app={fetch:async(input,init)=>{calls.push({input,init});return {ok:true}}};
           const listeners={};
-          const doc={readyState:"loading",addEventListener:(ev,cb)=>{listeners[ev]=cb}};
+          const doc={readyState:"loading",documentElement:{dataset:{}},addEventListener:(ev,cb)=>{listeners[ev]=cb}};
           const originalXHR=function(){};
           originalXHR.prototype.open=function(method){this.method=method};
           originalXHR.prototype.send=function(){};
@@ -56,7 +56,7 @@ jobs:
           };
           vm.runInNewContext(code,sandbox,{timeout:1000});
           (async()=>{
-            assert.equal(doc.documentElement?.dataset?.emlakcrmPreview,undefined);
+            assert.equal(doc.documentElement.dataset.emlakcrmPreview,"true");
             await app.fetch("https://tffvwxskvjuxoekwgdef.supabase.co/rest/v1/emlakcrm_user_backups",{method:"GET"});
             await app.fetch("https://tffvwxskvjuxoekwgdef.supabase.co/auth/v1/token?grant_type=password",{method:"POST"});
             await assert.rejects(app.fetch("https://tffvwxskvjuxoekwgdef.supabase.co/rest/v1/emlakcrm_user_backups",{method:"POST"}),/kapalı/);
