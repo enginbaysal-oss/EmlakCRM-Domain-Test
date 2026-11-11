@@ -1,0 +1,46 @@
+name: Verify isolated restore dry-run
+on:
+  push:
+    paths:
+      - '.github/workflows/yedek-prova-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Test account isolation and strictly read-only dry run
+        run: deno test tests/yedek-prova.test.js
+      - name: Check browser module type safety
+        run: deno check assets/yedek-prova.js assets/yedek-prova-kontrol.js
+      - name: Verify published dry-run page and JS with HTTPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            echo "attempt=${attempt}"
+            page="$(mktemp)"; main="$(mktemp)"; helper="$(mktemp)"
+            if curl --fail --silent --show-error --location --max-time 12 'https://emlkcrm.com.tr/yedek-prova.html?v=20261111' -o "$page" &&
+               curl --fail --silent --show-error --location --max-time 12 'https://emlkcrm.com.tr/assets/yedek-prova.js?v=20261111' -o "$main" &&
+               curl --fail --silent --show-error --location --max-time 12 'https://emlkcrm.com.tr/assets/yedek-prova-kontrol.js?v=20261111' -o "$helper" &&
+               grep -q 'Bulut yedeğini geri yükleme provası' "$page" &&
+               grep -q 'dryRunRestore' "$main" &&
+               grep -q 'Bulut yedeğini geri yükleme provası' "$page" &&
+               grep -q 'dryRunRestore' "$main" &&
+               grep -q 'NEVER writes to localStorage' "$helper" &&
+               ! grep -Eq 'localStorage[.]|sessionStorage[.]|document[.]cookie' "$main" &&
+               ! grep -Eq 'method:"POST"|method:"PUT"|method:"PATCH"|method:"DELETE"' "$helper"; then
+                echo 'DRY_RUN_PAGE_OK: published, read-only, HTTPS'
+                break
+            fi
+            if [ "$attempt" -eq 6 ]; then echo 'PAGE_NOT_READY'; exit 1; fi
+            sleep 8
+          done
+          curl --fail --silent --show-error --location --max-time 12 'https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html' -o /dev/null
+          echo 'OLD_CRM_OK'
