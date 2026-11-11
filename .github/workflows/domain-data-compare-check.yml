@@ -1,0 +1,58 @@
+name: Verify read-only domain data comparison
+on:
+  push:
+    paths:
+      - '.github/workflows/domain-data-compare-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static safety assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app/assets/veri-karsilastir.js
+          node --check app/preview-guard.js
+          python3 - <<'PY'
+          from pathlib import Path
+          code=Path('app/assets/veri-karsilastir.js').read_text()
+          page=Path('app/veri-karsilastir.html').read_text()
+          guard=Path('app/preview-guard.js').read_text()
+          assert 'getItem(' in code
+          assert 'setItem(' not in code and 'removeItem(' not in code
+          assert 'method:"GET"' in code
+          assert all(k not in code for k in ('method:"POST"', 'method:"PUT"', 'method:"PATCH"', 'method:"DELETE"'))
+          assert 'user_id:"eq."+uid' in code
+          assert 'auth/v1/user' in code
+          assert 'active&&active!==uid' in code
+          assert 'credentials:"omit"' in code
+          assert 'app/veri-karsilastir.html' in guard
+          assert 'script type="module" src="./assets/veri-karsilastir.js"' in page
+          print('READ_ONLY_COMPARE_CODE_OK')
+          PY
+      - name: Verify published HTTPS pages and unchanged working CRM
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            echo "attempt=${attempt}"
+            page="$(mktemp)"; script="$(mktemp)"; guard="$(mktemp)"
+            if curl -fsSL --max-time 12 "https://emlkcrm.com.tr/app/veri-karsilastir.html?check=20261111" -o "$page" &&
+               curl -fsSL --max-time 12 "https://emlkcrm.com.tr/app/assets/veri-karsilastir.js?check=20261111" -o "$script" &&
+               curl -fsSL --max-time 12 "https://emlkcrm.com.tr/app/preview-guard.js?check=20261111" -o "$guard" &&
+               grep -q 'Veri taşıma durumunu kontrol et' "$page" &&
+               grep -q 'localCount' "$script" &&
+               grep -q 'Bu cihazdaki kayıtları bulutla karşılaştır' "$guard"; then
+              echo 'COMPARE_PAGE_HTTPS_OK'
+              break
+            fi
+            if [ "$attempt" -eq 6 ]; then echo 'COMPARE_PAGE_NOT_LIVE'; exit 1; fi
+            sleep 8
+          done
+          curl -fsSL --max-time 12 "https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html" -o /dev/null
+          echo 'WORKING_LEGACY_CRM_OK'
