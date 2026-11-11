@@ -1,0 +1,59 @@
+name: Validate automatic user-data restoration preview
+on:
+  push:
+    paths:
+      - '.github/workflows/auto-migration-preview-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Test published scripts and guard order
+        shell: bash
+        run: |
+          set -euo pipefail
+          deno check app/emlakcrm-auto-migrate.js app/bulut-yedek-core.js
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ('index.html','portfoy-rapor.html'):
+              html=Path('app',name).read_text(encoding='utf-8')
+              guard='<script src="./preview-guard.js"></script>'
+              migration='<script type="module" src="./emlakcrm-auto-migrate.js?v=20261111b"></script>'
+              assert guard in html and migration in html
+              assert html.index(guard)<html.index(migration)
+          script=Path('app/emlakcrm-auto-migrate.js').read_text(encoding='utf-8')
+          assert 'validateBackupRow' in script and 'mergeAll' in script
+          assert 'location.origin===MIGRATION_ORIGIN' in script
+          assert 'if(oldMarker!==null&&!obj(marker))' in script
+          assert 'getLatest' in script
+          guard=Path('app/preview-guard.js').read_text(encoding='utf-8')
+          assert 'window.fetch=async' in guard and 'if(!["GET","HEAD","OPTIONS"].includes(method)' in guard
+          print('GUARDED_AUTO_MIGRATION_STATIC_OK')
+          PY
+      - name: Verify public HTTPS test app and old CRM unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6 7 8; do
+            first="$(mktemp)"; second="$(mktemp)"; code="$(mktemp)"
+            if curl -fsSL --max-time 12 'https://emlkcrm.com.tr/app/index.html?automigrate=20261111b' -o "$first" &&
+               curl -fsSL --max-time 12 'https://emlkcrm.com.tr/app/portfoy-rapor.html?automigrate=20261111b' -o "$second" &&
+               curl -fsSL --max-time 12 'https://emlkcrm.com.tr/app/emlakcrm-auto-migrate.js?automigrate=20261111b' -o "$code" &&
+               grep -q 'emlakcrm-auto-migrate.js?v=20261111b' "$first" &&
+               grep -q 'emlakcrm-auto-migrate.js?v=20261111b' "$second" &&
+               grep -q 'getLatest(kind,auth,deps)' "$code"; then
+               echo 'AUTO_MIGRATION_PREVIEW_HTTPS_OK'
+               break
+            fi
+            if [ "$attempt" -eq 8 ]; then exit 1; fi
+            sleep 8
+          done
+          curl -fsSL --max-time 12 'https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html' -o /dev/null
+          echo 'PRODUCTION_CRM_STILL_ONLINE'
