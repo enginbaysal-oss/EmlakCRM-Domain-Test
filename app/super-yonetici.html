@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="tr"><head><script src="./preview-guard.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Süper Yönetici | EmlakCRM</title><link rel="icon" href="./assets/emlakcrm-logo.svg" type="image/svg+xml">
+<style>
+:root{font:15px system-ui,Segoe UI,sans-serif;color:#17324d;background:#f2f6fb}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(120deg,#102e50,#164768);color:#fff;padding:21px 16px}main{max-width:1120px;margin:0 auto;padding:18px 16px 42px}h1{font-size:24px;margin:10px 0 4px}h2{font-size:18px;margin:4px 0 14px}.muted{color:#64748b}header .muted{color:#d9eaf1}.back{display:inline-block;padding:11px 15px;background:#f76b12;color:#fff;border-radius:10px;text-decoration:none;font-weight:750}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:20px}.stat,.card{background:#fff;border:1px solid #dfe8f1;border-radius:14px;padding:17px;box-shadow:0 3px 14px #14385d08}.stat strong{font-size:30px;display:block;margin-top:7px}.stat span{font-size:12px;color:#66788c}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.toolbar input,.toolbar select{border:1px solid #cad7e3;border-radius:9px;padding:10px;font:inherit;background:#fff}.toolbar input{flex:2;min-width:170px}.toolbar select{min-width:160px}button{border:0;border-radius:9px;padding:10px 14px;background:#087e96;color:#fff;font-weight:700;cursor:pointer}button:disabled{opacity:.5}table{width:100%;border-collapse:collapse;text-align:left}th,td{padding:13px 10px;border-bottom:1px solid #e8edf3;font-size:13px;vertical-align:top}th{background:#f4f8fb;color:#486277}td{overflow-wrap:anywhere}.scroll{overflow-x:auto}.pill{display:inline-block;border-radius:50px;background:#e6eff5;color:#234761;font-size:12px;font-weight:700;padding:5px 9px}.pill.ok{background:#e5f7ef;color:#126842}.pill.warn{background:#fff0db;color:#945b10}.notice{border:1px solid #ead59b;background:#fff8e8;padding:12px;border-radius:10px;font-size:13px;margin:15px 0}#error{color:#a92c34;white-space:pre-wrap}#gate{margin:18px auto;max-width:650px}.hidden{display:none!important}@media(max-width:680px){
+ header{padding:15px 12px}main{padding:12px 10px 28px}
+ h1{font-size:21px;line-height:1.25}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+ .stat,.card{min-width:0;padding:12px;border-radius:12px}
+ .stat strong{font-size:24px;overflow-wrap:anywhere}
+ .toolbar{gap:8px}
+ .toolbar input,.toolbar select{width:100%;min-width:0;flex:1 1 100%}
+ .toolbar button{max-width:100%;flex:1 1 100%;white-space:normal;overflow-wrap:anywhere}
+ .scroll{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:9px}
+ .scroll table{min-width:580px}
+ th,td{padding:10px 8px;overflow-wrap:normal}
+ .scroll button{white-space:normal;min-width:90px}
+ button{min-height:42px}
+ [style*="display:flex"]{flex-wrap:wrap}
+}
+@media(max-width:380px){
+ .stats{gap:6px}
+ .stat,.card{padding:10px}
+ .stat strong{font-size:21px}
+ .back{max-width:100%;font-size:13px}
+}
+.approval-alert{margin:0 0 16px;padding:13px 15px;border:1px solid #efb4b4;border-left:5px solid #bd2525;border-radius:11px;background:#fff0ee;color:#8c1616;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-weight:750}.approval-alert[hidden]{display:none!important}.approval-alert button{background:#b62424;color:#fff}.notify-control{background:#f7fbff;border:1px solid #d7e5ed;border-radius:10px;padding:10px 12px;margin:0 0 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px}.notify-control button{background:#174f70}.notify-control .muted{flex:1;min-width:160px}.remax-package-summary{padding:12px 14px;border:1px solid #f0d3a5;background:#fff5e8;border-radius:10px;font-weight:750;color:#81540a}.remax-package-summary.ready{background:#ecf7f0;border-color:#b5ddc6;color:#186044}[hidden]{display:none!important}
+/* Mobile: readable approval and subscription cards, with action buttons fully visible. */
+@media(max-width:680px){
+ .scroll{overflow:visible;width:100%;max-width:100%}
+ .scroll table{width:100%;min-width:0;border-collapse:separate;display:block}
+ .scroll thead{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+ .scroll tbody{display:grid;gap:10px;width:100%}
+ .scroll tbody tr{display:block;width:100%;min-width:0;overflow:hidden;background:#fff;border:1px solid #dbe7ef;border-radius:11px;box-shadow:0 2px 10px #123c6010}
+ .scroll tbody td{display:flex;align-items:flex-start;justify-content:space-between;gap:9px;width:100%;border-bottom:1px solid #edf1f5;padding:10px 12px;min-width:0;overflow-wrap:anywhere;word-break:break-word}
+ .scroll tbody td:last-child{border-bottom:0}
+ .scroll tbody td:before{content:attr(data-label);flex:0 0 37%;max-width:37%;color:#536b80;font-weight:750;font-size:12px;line-height:1.4}
+ .scroll tbody td[data-label="İşlem"],.scroll tbody td[data-label="İlyada 3"]{display:block}
+ .scroll tbody td[data-label="İşlem"]:before,.scroll tbody td[data-label="İlyada 3"]:before{display:block;max-width:100%;margin-bottom:7px}
+ .scroll tbody td button{width:100%;min-width:0;max-width:100%;margin:5px 0!important;white-space:normal;overflow-wrap:anywhere;line-height:1.4;min-height:44px}
+ .scroll tbody td .pill{max-width:60%;overflow-wrap:anywhere;text-align:right}
+ #officeApprovalPanel .scroll tbody td[data-label="İşlem"] button{display:block}
+}
+</style></head><body>
+<header><div style="max-width:1120px;margin:auto"><a class="back" href="./index.html#account">← Ayarlara Dön</a><h1>🛡️ Süper Yönetici Paneli</h1><p class="muted">EmlakCRM kullanıcı ve abonelik durumları</p></div></header>
+<main>
+<section class="card" id="gate" aria-live="polite"><h2>Yetki kontrolü</h2><p id="gateMessage">Oturumunuz ve yönetici yetkiniz doğrulanıyor...</p><a href="./index.html#account">Giriş yapmak veya hesabı değiştirmek için Ayarlara dönün.</a></section>
+<div id="dashboard" class="hidden"><section class="card" id="announcementAdmin" style="margin:16px 0">
+<h2>📣 Ana Sayfa Duyuruları</h2>
+<p class="muted">Yayımlanan duyurular kullanıcıların ana sayfasında görünür. Kişiye özel hedefleme için kullanıcı UUID değerlerini virgülle ayırın.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<label style="grid-column:1/-1">Başlık <input id="announcementTitle" maxlength="120" placeholder="Örn. Yeni danışman filtresi" style="width:100%;padding:11px"></label>
+<label style="grid-column:1/-1">Duyuru metni <textarea id="announcementBody" maxlength="2000" rows="4" style="width:100%;padding:11px;border:1px solid #cad7e3;border-radius:8px" placeholder="Kullanıcıların göreceği duyuru"></textarea></label>
+<label>Hedef kitle<select id="announcementAudience" style="width:100%;padding:10px"><option value="all">Tüm kullanıcılar</option><option value="selected">Seçili kullanıcılar</option></select></label>
+<label>Bitiş tarihi (isteğe bağlı)<input id="announcementEnds" type="datetime-local" style="width:100%;padding:10px"></label>
+<label id="announcementTargetsWrap" style="grid-column:1/-1" hidden>Kullanıcı kimlikleri (UUID, virgülle ayrılmış)<textarea id="announcementTargets" rows="2" style="width:100%;padding:10px" placeholder="Kullanıcı UUID"></textarea></label>
+</div>
+<div class="toolbar"><button type="button" id="announcementPublish">📣 Duyuruyu Yayımla</button><button type="button" id="announcementRefresh">Yenile</button><span id="announcementAdminStatus" class="muted" role="status"></span></div>
+<div id="announcementAdminList"></div>
+</section>
+<div id="approvalAlert" class="approval-alert" role="status" aria-live="polite" hidden>
+ <span id="approvalAlertText">İlyada 3 onay talebi bekliyor.</span>
+ <button type="button" id="approvalJump">Taleplere Git</button>
+</div>
+<div class="notify-control">
+ <button type="button" id="approvalNotifyEnable">🔔 Yeni Taleplerde Bildir</button>
+ <span id="approvalNotifyInfo" class="muted">İlyada 3 başvuruları panel açıkken 60 saniyede bir kontrol edilir.</span>
+</div>
+<section class="card" id="shopierIntegrationPanel" style="margin-top:16px" aria-label="Shopier ödeme bildirimi kurulumu">
+<h2>Shopier Ödeme Bağlantısı</h2>
+<p class="muted">Shopier siparişlerinin güvenli bildirim bağlantısını kurar. Ödemeleri önce doğrulama listesine alır; kullanıcı aboneliği bu aşamada otomatik açılmaz.</p>
+<div class="toolbar"><button type="button" id="shopierConnect" disabled>Shopier Bağlantısını Kur</button><button type="button" id="shopierCheck">Bağlantıyı Kontrol Et</button><button type="button" id="shopierOrderHealthCheck">Shopier Sipariş API’sini Test Et</button></div>
+<p id="shopierConnectionInfo" class="muted" role="status" aria-live="polite">Shopier bağlantısı kontrol ediliyor…</p>
+<p id="shopierOrderHealthResult" class="muted" role="status" aria-live="polite"></p>
+</section>
+<section class="card" id="shopierOfficeProductPanel" style="margin:0 0 16px" aria-label="İlyada 3 özel Shopier ürünü">
+<h2>İlyada 3 · 500 TL Shopier Ürünü</h2>
+<p class="muted">İlyada 3 için seçtiğimiz kare görseli yükle. Sistem <strong>500 TL (KDV dahil)</strong> fiyatlı, <strong>12 aylık dijital</strong> ürünü mağaza vitrininde gizli olacak şekilde yalnızca senin onayınla oluştursun. Mevcut 750 TL ürün korunur.</p>
+<label for="shopierOfficeArtwork" style="display:block;font-weight:700;margin:12px 0 6px">500 TL ürün görseli (PNG)</label>
+<input type="file" id="shopierOfficeArtwork" accept="image/png,.png" style="display:block;width:100%;margin:0 0 12px">
+<div class="toolbar"><button id="shopierOfficeProductCreate" type="button" disabled>Görseli Yükle ve Ürünü Oluştur</button><button id="shopierOfficeCreateCheck" type="button">Ürün Oluşturma Durumunu Kontrol Et</button><button id="shopierOfficeProductDiscover" type="button">Shopier’deki 500 TL Ürününü Bul</button></div>
+<p class="muted" id="shopierOfficeCreateStatus" role="status" aria-live="polite">Ürün durumu kontrol ediliyor…</p>
+<details style="margin-top:12px"><summary style="cursor:pointer;font-weight:650">Shopier'de önceden oluşturulan ürünün bağlantısını elle kaydet</summary>
+<label for="shopierOfficeProductUrl" style="display:block;font-weight:700;margin:12px 0 6px">500 TL ürün bağlantısı</label>
+<input id="shopierOfficeProductUrl" type="url" autocomplete="off" placeholder="https://www.shopier.com/enginbaysal/..." style="width:100%;max-width:650px">
+<div class="toolbar" style="margin-top:12px"><button type="button" id="shopierOfficeProductSave">Özel Ürün Bağlantısını Kaydet</button><button type="button" id="shopierOfficeProductCheck">Kontrol Et</button></div>
+<p class="muted" id="shopierOfficeProductMessage" role="status" aria-live="polite">Özel ürün bağlantısı kontrol ediliyor…</p>
+<p class="muted" style="font-size:13px">Ürünü vitrinden gizlemek gizli erişim garantisi değildir. Bu bağlantı ödeme ve abonelik eşleştirmesi tamamlanana kadar yalnızca yönetici ekranında tutulur.</p>
+</details>
+</section>
+<section class="card" id="legalDeliveryPanel" style="margin:0 0 16px" aria-label="Sözleşme e-posta teslimi">
+<h2>✉️ Sözleşme E-posta Teslimi</h2>
+<p class="muted">Yalnızca doğrulanmış Shopier ödemesine bağlı sözleşme kopyalarının teslimat durumunu gösterir. Bu ekran gönderimi başlatmaz.</p>
+<div class="toolbar"><button type="button" id="legalStatusRefresh">Gönderim Durumunu Yenile</button></div>
+<p id="legalStatusResult" role="status" aria-live="polite" class="notice">Sözleşme teslimatı kontrol ediliyor…</p>
+<p id="legalProviderResult" role="status" aria-live="polite" class="notice">E-posta servisinin kurulum durumu kontrol ediliyor…</p>
+<p class="muted" style="font-size:13px">Bu panel yalnızca ayarların varlığını kontrol eder. Gönderici alan adının doğrulanması e-posta sağlayıcısının panelinde ayrıca kontrol edilmelidir. <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer">Resend alan adı ayarları</a></p>
+</section>
+<section class="card" id="officePackagePanel" style="margin-top:16px" aria-label="RE/MAX hediye JSON paketi yönetimi">
+<h2>🎁 RE/MAX Şablon Paketi</h2>
+<p class="muted">Paketi bir kez sen yüklersin. İlyada 3 ofis onayı ve aktif EmlakCRM aboneliği olan danışmanlar EmlakAsistan içinden tek tuşla erişir.</p><p id="remaxPackageSummary" class="remax-package-summary" role="status" aria-live="polite">Paket durumu kontrol ediliyor…</p>
+<label for="remaxPackageFile" style="font-weight:700;display:block;margin:8px 0">RE/MAX JSON dosyan</label>
+<input id="remaxPackageFile" type="file" accept=".json,application/json" style="width:100%;margin:4px 0 12px" aria-label="RE/MAX şablon paketini seç">
+<div class="toolbar">
+<button id="remaxPackageUpload" type="button" disabled>JSON Paketini Yükle</button>
+<button id="remaxPackageCheck" type="button">Paketi Kontrol Et</button>
+<button id="remaxPackageDelete" type="button" style="background:#a93b42" hidden disabled>Paketi Kaldır</button>
+</div>
+<p id="remaxPackageStatus" class="muted" role="status" aria-live="polite">Şablon dosyası seçmek için yukarıdaki alanı kullan.</p>
+</section>
+<section class="card" id="officeApprovalPanel" style="margin:0 0 17px"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px"><h2>İlyada 3 Onay Talepleri</h2><button type="button" id="discountRefresh">Talepleri Yenile</button></div><p class="muted">“Evet” yanıtı veren danışmanların ofis kayıtlarını buradan doğrula. Ofis onayı ücretli abonelik başlatmaz.</p><div class="scroll"><table><thead><tr><th>Danışman</th><th>Talep</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="discountRows"></tbody></table></div><p id="discountMessage" class="muted"></p></section>
+<div class="stats"><div class="stat"><span>Toplam kullanıcı</span><strong id="total">—</strong></div><div class="stat"><span>Süper yönetici</span><strong id="admins">—</strong></div><div class="stat"><span>Aktif ücretli abonelik</span><strong id="active">—</strong></div><div class="stat"><span>Aboneliği olmayan</span><strong id="none">—</strong></div></div>
+<section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>Kullanıcılar ve Abonelikler</h2><button type="button" id="refresh">Yenile</button></div><p class="muted" style="font-size:13px">Özel fiyat ve ofis onayı abonelik değildir. RE/MAX paketi yalnızca aktif aboneliği olan onaylı danışmanlara açılır.</p>
+<div class="toolbar"><input id="search" type="search" placeholder="Kullanıcı e-postasında ara" aria-label="Kullanıcı ara"><select id="filter" aria-label="Abonelik durumuna göre filtrele"><option value="">Tüm durumlar</option><option value="unlimited">Süresiz yönetici</option><option value="active">Aktif abonelik</option><option value="none">Abonelik yok</option><option value="pending">Bekleyen</option><option value="expired">Süresi dolan</option><option value="revoked">İptal edilen</option></select></div>
+<div class="scroll"><table><thead><tr><th>Kullanıcı</th><th>Yetki / Durum</th><th>Kayıt tarihi</th><th>Son giriş</th><th>Abonelik başlangıcı</th><th>Abonelik bitişi</th><th>Ödeme sağlayıcısı</th><th>İlyada 3</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p id="empty" class="muted hidden">Filtreye uygun kayıt yok.</p><p id="updated" class="muted" style="font-size:12px"></p><p id="error" role="alert"></p></section>
+
+
+<div class="notice">İlyada 3 onayı yalnızca 500 TL fiyat ve RE/MAX şablon paketine hak kazandırır. Ücretli abonelik ancak doğrulanmış başarılı ödeme sonrasında aktifleştirilir.</div>
+</div></main>
+<script>
+"use strict";
+const endpoint="https://tffvwxskvjuxoekwgdef.supabase.co";
+const apiKey="sb_publishable_ADLnhwviFBqWtBkq94Adag_ULlAuzUe";
+const sessionKey="emlakcrm_auth_session_v1";
+const rememberedKey="emlakcrm_auth_remember_v1";
+const $=id=>document.getElementById(id);
+let userRows=[];let discountToken=null;let officeStatusByEmail=new Map();
+const RE_MAX_BUCKET="emlakcrm-office-templates";
+const RE_MAX_PATH="ilyada3/remax-templates.json";
+const RE_MAX_OBJECT=endpoint+"/storage/v1/object/"+RE_MAX_BUCKET+"/"+RE_MAX_PATH;
+const shopierProductCreateBtn=$("shopierOfficeProductCreate");
+const shopierProductImage=$("shopierOfficeArtwork");
+const shopierProductCreateState=$("shopierOfficeCreateStatus");
+let shopierProductCreationBlocked=false;
+let shopierProductCreationReady=false;
+async function productCreationRequest(method="GET"){
+ const t=await verifiedToken();
+ const response=await fetch(endpoint+"/functions/v1/emlakcrm-shopier-product",{
+  method,headers:{"apikey":apiKey,"authorization":"Bearer "+t,"content-type":"application/json"},cache:"no-store"
+ });
+ const payload=await response.json().catch(()=>({}));
+ if(!response.ok)throw Error(payload.reason||payload.error||"Shopier ürün işlemi doğrulanamadı.");
+ return payload;
+}
+async function shopierProductCreationCheck(){
+ try{
+  const state=await productCreationRequest("GET");
+  shopierProductCreationReady=state.ready===true;
+  shopierProductCreationBlocked=shopierProductCreationReady||state.create_attempted===true;
+  shopierProductCreateBtn.disabled=shopierProductCreationBlocked||!shopierProductImage.files?.length;
+  shopierProductCreateState.textContent=shopierProductCreationReady
+   ?"500 TL ürün Shopier'de oluşturuldu. Ürün bağlantısı aşağıdaki alanda kayıtlı."
+   :state.create_attempted
+   ?"Ürün oluşturma denemesi yapıldı. Aynı işlemi tekrarlamak yerine Shopier ürün listesini kontrol edin; ikinci ürün oluşturulmayacak."
+   :state.image_ready
+   ?"Görsel daha önce yüklendi. 500 TL ürününü oluşturmak için görseli seçip onay verebilirsiniz."
+   :"Ürün henüz oluşturulmadı. Hazırladığımız 500 TL kare görselini seçiniz.";
+  if(shopierProductCreationReady&&state.product_url){
+   $("shopierOfficeProductUrl").value=state.product_url;
+  }
+ }catch(e){
+  shopierProductCreateBtn.disabled=true;
+  shopierProductCreateState.textContent="Ürün durumu kontrol edilemedi: "+e.message;
+ }
+}
+shopierProductImage.addEventListener("change",()=>{
+ const file=shopierProductImage.files?.[0];
+ shopierProductCreateBtn.disabled=shopierProductCreationBlocked||!file;
+ shopierProductCreateState.textContent=file
+  ?"Seçilen görsel: "+file.name+". Oluştur düğmesine basmadan önce dosyanın 500 TL yazdığını kontrol ediniz."
+  :"Görsel seçilmedi.";
+});
+$("shopierOfficeCreateCheck").addEventListener("click",shopierProductCreationCheck);
+$("shopierOfficeProductDiscover").addEventListener("click",async()=>{
+ const button=$("shopierOfficeProductDiscover"),status=$("shopierOfficeCreateStatus");
+ button.disabled=true;status.textContent="Shopier ürünleri okunuyor. Yeni ürün oluşturulmuyor…";
+ try{
+  const t=await verifiedToken();
+  const r=await fetch(endpoint+"/functions/v1/emlakcrm-shopier-product",{
+    method:"PUT",headers:{"apikey":apiKey,"authorization":"Bearer "+t,"content-type":"application/json"},cache:"no-store"
+  });
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw Error(j.reason||j.error||"Shopier ürün kaydı alınamadı");
+  if(j.status!=="ready"||!/^https:\/\/www\.shopier\.com\/enginbaysal\/\d+$/.test(j.product_url||""))throw Error("Ürün doğrulaması tamamlanamadı");
+  $("shopierOfficeProductUrl").value=j.product_url;
+  status.textContent="500 TL dijital ürün Shopier'den doğrulandı ve EmlakCRM'ye kaydedildi. Ödeme aktivasyonu henüz kapalı.";
+  await loadOfficeShopierProduct();
+ }catch(e){
+  status.textContent="Shopier ürününü otomatik bulamadım: "+e.message+". Var olan ürünün bağlantısını aşağıdaki alandan elle kaydedebilirsin.";
+ }finally{button.disabled=false}
+});
+
+shopierProductCreateBtn.addEventListener("click",async()=>{
+ if(shopierProductCreationBlocked)return;
+ const file=shopierProductImage.files?.[0];
+ if(!file||file.type!=="image/png"||file.size>5*1024*1024||file.size<10000){
+  shopierProductCreateState.textContent="Lütfen 5 MB'dan küçük, geçerli PNG görselini seçin.";return;
+ }
+ if(!confirm("İlyada 3 için yalnızca bir adet 500 TL dijital abonelik ürünü, Shopier vitrininde gizli olacak şekilde oluşturulsun mu? 750 TL ürün değişmeyecek."))return;
+ shopierProductCreateBtn.disabled=true;
+ shopierProductCreateState.textContent="500 TL görseli güvenli alana yükleniyor…";
+ try{
+  const token=await verifiedToken();
+  const upload=await fetch(endpoint+"/storage/v1/object/emlakcrm-shopier-images/ilyada3/emlakcrm-500.png",{
+   method:"POST",headers:{"apikey":apiKey,"Authorization":"Bearer "+token,"content-type":"image/png","x-upsert":"true","cache-control":"no-cache"},body:file,cache:"no-store"
+  });
+  if(!upload.ok)throw Error("Görsel yüklenemedi (HTTP "+upload.status+").");
+  shopierProductCreateState.textContent="Görsel yüklendi. Shopier ürünü oluşturuluyor ve fiyat/görünürlük doğrulanıyor…";
+  const result=await productCreationRequest("POST");
+  if(result?.status!=="ready"||typeof result.product_url!=="string")throw Error("Shopier ürün kaydı doğrulanamadı.");
+  $("shopierOfficeProductUrl").value=result.product_url;
+  shopierProductCreateState.textContent="500 TL özel ürün kaydedildi. Ücretli üyelik aktivasyonu henüz açık değil.";
+  shopierProductCreationBlocked=true;shopierProductCreationReady=true;
+  await loadOfficeShopierProduct();
+ }catch(e){
+  shopierProductCreateState.textContent="Ürün oluşturma tamamlanamadı: "+e.message+
+   " Hata varsa yeniden oluşturmadan önce 'Ürün Oluşturma Durumunu Kontrol Et' düğmesine basın.";
+  await shopierProductCreationCheck();
+ }finally{
+  shopierProductCreateBtn.disabled=true;
+ }
+});
+async function officeShopierProductRequest(method,payload){
+ const token=await verifiedToken();
+ return discountRpc(method==="save"?"emlakcrm_admin_set_shopier_office_product":"emlakcrm_admin_shopier_office_product",payload||{},token);
+}
+async function loadOfficeShopierProduct(){
+ const status=$("shopierOfficeProductMessage"),field=$("shopierOfficeProductUrl");
+ status.textContent="Özel ürün kontrol ediliyor…";
+ try{
+  const j=await officeShopierProductRequest("get");
+  if(j?.status==="ready"&&typeof j.product_url==="string"){
+   field.value=j.product_url;
+   status.textContent="500 TL özel ürün bağlantısı kayıtlı. Ödeme aktivasyonu henüz devrede değil.";
+  }else{
+   field.value="";
+   status.textContent="500 TL özel ürün henüz kaydedilmedi.";
+  }
+ }catch(e){status.textContent="Bağlantı durumu kontrol edilemedi: "+e.message}
+}
+$("shopierOfficeProductCheck").addEventListener("click",loadOfficeShopierProduct);
+$("shopierOfficeProductSave").addEventListener("click",async()=>{
+ const field=$("shopierOfficeProductUrl"),status=$("shopierOfficeProductMessage"),button=$("shopierOfficeProductSave");
+ const v=field.value.trim();
+ if(!/^https:\/\/(?:www\.)?shopier\.com\/enginbaysal\/[0-9]{5,20}\/?$/.test(v)){
+  status.textContent="Lütfen kendi Shopier hesabınızdaki yeni ürünün tam bağlantısını girin.";return;
+ }
+ if(!confirm("Bu bağlantının 500 TL (KDV dahil) ürününe ait olduğunu ve Shopier mağazasında görünürlüğünün kapalı olduğunu doğruladınız mı?"))return;
+ button.disabled=true;status.textContent="Bağlantı kaydediliyor…";
+ try{
+  const j=await officeShopierProductRequest("save",{p_url:v});
+  if(j?.status!=="ready")throw Error("Kayıt doğrulanamadı");
+  field.value=j.product_url;
+  status.textContent="500 TL özel ürün bağlantısı kaydedildi. Abonelik aktivasyonu hâlâ test bekliyor.";
+ }catch(e){status.textContent="Bağlantı kaydedilemedi: "+e.message}
+ finally{button.disabled=false}
+});
+const shopierConnectBtn=$("shopierConnect");
+const shopierInfo=$("shopierConnectionInfo");
+$("shopierOrderHealthCheck").addEventListener("click",async()=>{
+ const button=$("shopierOrderHealthCheck"),output=$("shopierOrderHealthResult");
+ button.disabled=true;output.textContent="Shopier sipariş erişimi kontrol ediliyor. Herhangi bir ödeme veya yeni sipariş oluşturulmuyor…";
+ try{
+  const t=await verifiedToken();
+  const r=await fetch(endpoint+"/functions/v1/emlakcrm-shopier-health",{
+   method:"GET",headers:{"apikey":apiKey,"authorization":"Bearer "+t},cache:"no-store"
+  });
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw Error("Bağlantı kontrolü başarısız ("+r.status+").");
+  const order=d.shopier_order_api||{},owner=d.shopier_owner_api||{};
+  output.textContent="Sipariş API: "+(order.ok?"Erişim başarılı":"Erişim reddedildi / HTTP "+String(order.http_status??"?"))+
+   " · Mağaza erişimi: "+(owner.ok?"Başarılı":"HTTP "+String(owner.http_status??"?"))+
+   " · Bildirim: "+(d.webhook_registered?"Kurulu":"Bulunamadı")+
+   " · Ürünler: "+(d.product_750_ready&&d.product_500_ready?"500/750 TL hazır":"Kontrol gerekli")+
+   " · Otomatik aktivasyon: "+(d.activation_enabled?"Açık":"Kapalı");
+ }catch(e){output.textContent="Shopier API kontrolü tamamlanamadı: "+String(e.message||e)}
+ finally{button.disabled=false}
+});
+async function shopierStatusRequest(method="GET"){
+ const t=await verifiedToken();
+ const r=await fetch(endpoint+"/functions/v1/emlakcrm-shopier-setup",{
+  method,headers:{"apikey":apiKey,"authorization":"Bearer "+t,"content-type":"application/json"},cache:"no-store"});
+ const j=await r.json().catch(()=>({}));
+ if(!r.ok)throw Error(j.reason==="shopier_pat_missing"?"Shopier anahtarı sunucuda bulunamadı.":j.error==="webhook_already_registered_without_token"?"Aynı webhook daha önce oluşturulmuş; Shopier bağlantısını kontrol et.":"Shopier kurulumu doğrulanamadı ("+r.status+").");
+ return j;
+}
+async function shopierCheck(){
+ shopierConnectBtn.disabled=true;
+ shopierInfo.textContent="Bağlantı kontrol ediliyor...";
+ try{
+  const state=await shopierStatusRequest();
+  shopierConnectBtn.hidden=state.webhook_ready===true;
+  shopierConnectBtn.disabled=state.webhook_ready===true||state.pat_ready!==true;
+  shopierInfo.textContent=state.webhook_ready
+   ?"Shopier bildirim bağlantısı kurulu. Sipariş doğrulama açık; otomatik üyelik aktivasyonu henüz kapalı."
+   :state.pat_ready?"Shopier anahtarı hazır. Bağlantıyı kurmak için düğmeye bas.":"Shopier anahtarı sunucuda bulunamadı.";
+ }catch(e){shopierConnectBtn.disabled=true;shopierInfo.textContent=e.message}
+}
+async function shopierConnect(){
+ if(!confirm("Shopier'in order.created bildirimi EmlakCRM sunucusuna bağlansın mı? Bu işlem ödeme yapmaz ve abonelik açmaz."))return;
+ shopierConnectBtn.disabled=true;shopierInfo.textContent="Shopier bağlantısı kuruluyor...";
+ try{
+  const state=await shopierStatusRequest("POST");
+  if(state.webhook_ready!==true)throw Error("Bağlantı doğrulanamadı.");
+  shopierInfo.textContent="Shopier bildirim bağlantısı kuruldu. Abonelik aktivasyonu henüz kapalı.";
+  shopierConnectBtn.hidden=true;
+ }catch(e){shopierInfo.textContent="Kurulum tamamlanamadı: "+e.message;shopierConnectBtn.disabled=false}
+}
+$("shopierCheck").addEventListener("click",shopierCheck);
+shopierConnectBtn.addEventListener("click",shopierConnect);
+const remaxStatus=$("remaxPackageStatus");
+const remaxUpload=$("remaxPackageUpload");
+const remaxDelete=$("remaxPackageDelete");
+const remaxSummary=$("remaxPackageSummary");
+let remaxPackageExists=false;
+function showRemaxState(exists,modified){
+ remaxPackageExists=exists;
+ remaxDelete.hidden=!exists;
+ remaxDelete.disabled=!exists;
+ remaxUpload.textContent=exists?"JSON Paketini Güncelle":"JSON Paketini Yükle";
+ remaxSummary.textContent=exists?"Paket yüklü · İlyada 3 danışmanları için hazır"+(modified?" · Son güncelleme: "+fmt(modified):""):"Paket yüklenmedi · Önce JSON dosyanı seçip yükle";
+ remaxSummary.className="remax-package-summary"+(exists?" ready":"");
+}
+function remaxValidate(data){
+  if(!Array.isArray(data)||!data.length||data.length>50)throw Error("JSON, en fazla 50 belgelik şablon listesi olmalı.");
+  if(data.some(t=>!t||typeof t.name!=="string"||!t.name.trim()||!Array.isArray(t.pages)||!t.pages.length||
+    !Array.isArray(t.fields)||t.pages.some(page=>typeof page!=="string"||!page.startsWith("data:image/"))))
+    throw Error("Şablon biçimi EmlakAsistan ile uyumlu değil.");
+}
+function remaxHeaders(token){return {apikey:apiKey,Authorization:"Bearer "+token}}
+async function remaxCheck(){
+  remaxStatus.textContent="Paket durumu kontrol ediliyor...";
+  try{
+    const token=await verifiedToken();
+    const response=await fetch(endpoint+"/storage/v1/object/list/"+RE_MAX_BUCKET,{
+      method:"POST",headers:{...remaxHeaders(token),"Content-Type":"application/json"},
+      body:JSON.stringify({prefix:"ilyada3",limit:20,offset:0}),cache:"no-store"
+    });
+    if(!response.ok)throw Error("Dosya listesi alınamadı (HTTP "+response.status+").");
+    const found=(await response.json()).find(o=>o.name==="remax-templates.json");
+    showRemaxState(Boolean(found),found?.updated_at);
+    remaxStatus.textContent=found?"Paket durumu doğrulandı.":"Henüz sunucuya RE/MAX JSON paketi yüklenmemiş.";
+  }catch(e){
+    remaxDelete.hidden=true;remaxDelete.disabled=true;
+    remaxSummary.textContent="Paket durumu doğrulanamadı. Silme işlemi kapalı.";
+    remaxStatus.textContent="Kontrol hatası: "+e.message;
+  }
+}
+$("remaxPackageFile").addEventListener("change",()=>{
+  const file=$("remaxPackageFile").files?.[0];
+  remaxUpload.disabled=!file;
+  if(file)remaxStatus.textContent="Seçilen dosya: "+file.name+" ("+Math.round(file.size/1024)+" KB). Yükle düğmesine bas.";
+});
+remaxUpload.addEventListener("click",async()=>{
+  const file=$("remaxPackageFile").files?.[0];if(!file)return;
+  remaxUpload.disabled=true;remaxStatus.textContent="Dosya doğrulanıyor...";
+  try{
+    if(file.size>20*1024*1024)throw Error("JSON paketi 20 MB'dan büyük olamaz.");
+    const body=await file.text(),data=JSON.parse(body);remaxValidate(data);
+    const token=await verifiedToken();
+    if(!confirm(data.length+" RE/MAX şablonu İlyada 3 danışmanlarının erişimine açılsın mı? Önceki paket varsa güncellenecek."))return;
+    remaxStatus.textContent="Paket güvenli alana yükleniyor...";
+    const response=await fetch(RE_MAX_OBJECT,{
+      method:"POST",headers:{...remaxHeaders(token),"Content-Type":"application/json","x-upsert":"true"},
+      body,cache:"no-store"
+    });
+    if(!response.ok){const err=await response.json().catch(()=>({}));throw Error(err.message||"Yükleme başarısız (HTTP "+response.status+").")}
+    $("remaxPackageFile").value="";
+    showRemaxState(true,new Date().toISOString());
+    remaxStatus.textContent=data.length+" şablon yüklendi. Aktif abonelikli ve onaylı İlyada 3 danışmanları EmlakAsistan'da görebilir.";
+  }catch(e){remaxStatus.textContent="JSON yüklenemedi: "+e.message}
+  finally{remaxUpload.disabled=!$("remaxPackageFile").files?.length}
+});
+$("remaxPackageCheck").addEventListener("click",remaxCheck);
+$("remaxPackageDelete").addEventListener("click",async()=>{
+  if(!confirm("RE/MAX hediye paketini erişimden kaldırmak istediğine emin misin? Kullanıcıların önceden indirdiği yerel kopyalar geri alınamaz."))return;
+  remaxStatus.textContent="Paket kaldırılıyor...";
+  try{
+    const token=await verifiedToken();
+    const response=await fetch(endpoint+"/storage/v1/object/"+RE_MAX_BUCKET,{
+      method:"DELETE",headers:{...remaxHeaders(token),"Content-Type":"application/json"},
+      body:JSON.stringify({prefixes:[RE_MAX_PATH]}),cache:"no-store"
+    });
+    if(!response.ok){const err=await response.json().catch(()=>({}));throw Error(err.message||"Silme başarısız (HTTP "+response.status+").")}
+    showRemaxState(false);
+    remaxStatus.textContent="Paket kaldırıldı. Yeni indirme yapılamaz.";
+  }catch(e){remaxStatus.textContent="Paket kaldırılamadı: "+e.message}
+});
+async function discountRpc(name,body,token){
+ const response=await fetch(endpoint+"/rest/v1/rpc/"+name,{method:"POST",headers:{apikey:apiKey,Authorization:"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(body)});
+ if(!response.ok)throw Error("Ofis doğrulama işlemi tamamlanamadı ("+response.status+").");
+ return response.json();
+}
+let approvalKnownPending=null;
+async function loadDiscounts({quiet=false}={}){
+ const tbody=$("discountRows");if(!quiet){tbody.replaceChildren();$("discountMessage").textContent="Talepler yükleniyor...";}
+ try{
+  discountToken=await verifiedToken();
+  const items=await discountRpc("emlakcrm_admin_discount_requests",{},discountToken);
+  if(!Array.isArray(items))throw Error("Beklenmeyen talep listesi.");
+  items.sort((a,b)=>(a.status==="pending"?0:1)-(b.status==="pending"?0:1));
+  const newRows=document.createDocumentFragment();
+  for(const item of items){
+   const tr=document.createElement("tr");
+   addCell(tr,item.email||"—",null,"Danışman");addCell(tr,fmt(item.requested_at),null,"Talep");addCell(tr,item.status==="pending"?"Onay bekliyor":item.status==="approved"?"Onaylandı":"Reddedildi",null,"Durum");
+   const td=document.createElement("td");td.dataset.label="İşlem";
+   if(item.status==="pending"){
+    for(const [label,approved] of [["Onayla",true],["Reddet",false]]){
+     const btn=document.createElement("button");btn.type="button";btn.textContent=label;btn.style.margin="3px";if(!approved)btn.style.background="#a63838";
+     btn.onclick=async()=>{if(!confirm(item.email+" için "+(approved?"İlyada 3 ofis kaydı onaylansın mı?":"ofis kaydı reddedilsin mi?")))return;
+      btn.disabled=true;try{
+        await discountRpc("emlakcrm_admin_review_discount",{p_request_id:item.id,p_approve:approved},discountToken);
+        await loadDiscounts();
+
+      }catch(e){$("discountMessage").textContent=e.message;btn.disabled=false}};
+     td.append(btn);
+    }
+   }tr.append(td);newRows.append(tr);
+  }
+  // Replace once after a successful fetch; silent polling must not duplicate approval cards.
+  tbody.replaceChildren(newRows);
+  const pendingItems=items.filter(item=>item.status==="pending");
+  const pending=pendingItems.length;
+  const ids=new Set(pendingItems.map(item=>String(item.id)));
+  const newlyArrived=approvalKnownPending!==null?pendingItems.filter(item=>!approvalKnownPending.has(String(item.id))):[];
+  approvalKnownPending=ids;
+  const alertBox=$("approvalAlert");
+  alertBox.hidden=!pending;
+  $("approvalAlertText").textContent=pending?("🔔 "+pending+" İlyada 3 danışmanının başvurusu onayınızı bekliyor."):"";
+  document.title=pending?"("+pending+" onay) Süper Yönetici | EmlakCRM":"Süper Yönetici | EmlakCRM";
+  if(newlyArrived.length&&window.Notification?.permission==="granted"){
+   try{new Notification("EmlakCRM: Yeni İlyada 3 başvurusu",{body:newlyArrived.length+" yeni danışman için onay bekleniyor.",tag:"emlakcrm-ilyada3-pending"});}catch(_){}
+  }
+  $("discountMessage").textContent=pending?pending+" danışmanın doğrulama talebi onayınızı bekliyor.":"Bekleyen ofis onay talebi yok.";
+   officeStatusByEmail=new Map(items.map(item=>[String(item.email||"").trim().toLowerCase(),item.status]));
+   render();
+ }catch(e){if(!quiet)$("discountMessage").textContent=e.message}
+}
+function showGate(message){$("dashboard").classList.add("hidden");$("gate").classList.remove("hidden");$("gateMessage").textContent=message}
+function fmt(x){if(!x)return "—";const d=new Date(x);return Number.isNaN(d.getTime())?"—":new Intl.DateTimeFormat("tr-TR",{dateStyle:"short",timeStyle:"short"}).format(d)}
+function statusText(status){return ({unlimited:"Süresiz yönetici",active:"Aktif",none:"Abonelik yok",pending:"Bekliyor",expired:"Süresi doldu",revoked:"İptal edildi"})[status]||"Belirsiz"}
+function addCell(tr,value,cls,label){const td=document.createElement("td");if(label)td.dataset.label=label;if(cls){const span=document.createElement("span");span.className=cls;span.textContent=value;td.append(span)}else td.textContent=value;tr.append(td)}
+function render(){
+ const term=$("search").value.toLocaleLowerCase("tr").trim(),filter=$("filter").value;
+ const filtered=userRows.filter(u=>(!filter||u.subscription_status===filter)&&(!term||String(u.email||"").toLocaleLowerCase("tr").includes(term)));
+ $("rows").replaceChildren();
+ for(const u of filtered){
+  const tr=document.createElement("tr"),status=u.subscription_status||"none";
+  addCell(tr,u.email||"E-posta bulunamadı",null,"Kullanıcı");
+  addCell(tr,statusText(status),"pill "+(["active","unlimited"].includes(status)?"ok":status==="none"?"warn":""),"Yetki / Durum");
+  addCell(tr,fmt(u.created_at),null,"Kayıt tarihi");addCell(tr,fmt(u.last_sign_in_at),null,"Son giriş");
+  addCell(tr,status==="unlimited"?"Süresiz":fmt(u.starts_at),null,"Abonelik başlangıcı");
+  addCell(tr,status==="unlimited"?"Süresiz":fmt(u.expires_at),null,"Abonelik bitişi");
+  addCell(tr,u.payment_provider||"—",null,"Ödeme sağlayıcısı");
+   const td=document.createElement("td"),email=String(u.email||"").trim().toLowerCase();td.dataset.label="İlyada 3";
+   const officeState=officeStatusByEmail.get(email)||"none";
+   if(u.is_super_admin){td.textContent="Yönetici";}
+   else{
+     const approved=officeState==="approved";
+     const hint=document.createElement("div");hint.textContent=approved?(status==="active"?"Ofis onaylı · yıllık 500 TL · Şablon erişimi açık":status==="unlimited"?"Ofis onaylı · yönetici":"Ofis onaylı · yıllık 500 TL özel fiyat · Abonelik bekleniyor"):officeState==="pending"?"Onayınız bekleniyor":"Yıllık 750 TL standart";hint.className="muted";td.append(hint);
+     const btn=document.createElement("button");btn.type="button";btn.textContent=approved?"Ofis Yetkisini Kaldır":"İlyada 3 Olarak Onayla";btn.style.marginTop="6px";
+     btn.onclick=async()=>{
+       const message=approved?"İlyada 3 ofis yetkisi ve RE/MAX şablon erişimi kaldırılsın mı?":"Bu danışmanın İlyada 3 ofisinde çalıştığını doğruladınız mı? 500 TL fiyatı ve RE/MAX JSON paketi açılacaktır.";
+       if(!confirm(u.email+"\n"+message))return;
+       btn.disabled=true;
+       try{
+          const t=await verifiedToken(),nextState=await discountRpc("emlakcrm_admin_set_office_privilege",{p_user_id:u.id,p_approved:!approved},t);
+          officeStatusByEmail.set(email,nextState);render();
+
+        }
+       catch(e){alert("Ofis yetkisi güncellenemedi: "+e.message);btn.disabled=false}
+     };
+     td.append(btn);
+
+   }
+   tr.append(td);$("rows").append(tr);
+ }
+ $("empty").classList.toggle("hidden",filtered.length>0);
+ $("total").textContent=userRows.length;$("admins").textContent=userRows.filter(u=>u.is_super_admin).length;
+ $("active").textContent=userRows.filter(u=>u.subscription_status==="active").length;
+ $("none").textContent=userRows.filter(u=>u.subscription_status==="none").length;
+}
+async function loadLegalDeliveryStatus(){
+ const status=$("legalStatusResult"),provider=$("legalProviderResult"),btn=$("legalStatusRefresh");
+ btn.disabled=true;status.textContent="Sözleşme gönderimi kontrol ediliyor…";
+ provider.textContent="E-posta servisinin kurulumu kontrol ediliyor…";
+ try{
+  const token=await verifiedToken();
+  const response=await fetch(endpoint+"/rest/v1/rpc/emlakcrm_admin_legal_delivery_status",{
+   method:"POST",
+   headers:{apikey:apiKey,Authorization:"Bearer "+token,"Content-Type":"application/json"},
+   body:"{}",cache:"no-store"
+  });
+  if(!response.ok)throw Error("Teslimat bilgileri alınamadı ("+response.status+").");
+  const x=await response.json();
+  status.textContent=(x.enabled?"✓ Otomatik e-posta gönderimi açık.":"⚠️ Otomatik e-posta gönderimi kapalı.")+
+   " Hukuki metin: "+(x.legal_bundle_approved?"onaylı sürüm var.":"hukuk onayı bekleniyor.")+
+   " · Bekleyen: "+Number(x.queued||0)+
+   " · Gönderiliyor: "+Number(x.sending||0)+
+   " · Tekrar denenecek: "+Number(x.retry||0)+
+   " · Gönderildi: "+Number(x.sent||0)+
+   " · Hatalı: "+Number(x.failed||0)+".";
+  try{
+   const remote=await fetch(endpoint+"/functions/v1/emlakcrm-legal-delivery",{
+    method:"GET",headers:{apikey:apiKey,Authorization:"Bearer "+token},cache:"no-store"
+   });
+   if(!remote.ok)throw Error("Kontrol servisi yanıt vermedi ("+remote.status+").");
+   const m=await remote.json();
+   const keyReady=m.provider_key_configured===true,senderReady=m.sender_configured===true;
+   provider.textContent="Resend API bağlantısı: "+(keyReady?"ayarlandı":"eksik")+
+    " · Gönderici adresi: "+(senderReady?"tanımlandı":"eksik")+
+    " · Otomatik çalışma izni: "+(m.worker_enabled===true?"açık":"kapalı")+
+    ". Gönderici alan adı DNS doğrulaması ayrıca gereklidir.";
+  }catch(err){
+   provider.textContent="E-posta sağlayıcısı durumu sorgulanamadı: "+String(err?.message||err);
+  }
+ }catch(e){
+  status.textContent="Durum alınamadı: "+String(e.message||e);
+  provider.textContent="Önce süper yönetici hesabınızla giriş yapın.";
+ }finally{btn.disabled=false}
+}
+
+const announcementEndpoint=endpoint+"/rest/v1/emlakcrm_announcements";
+const announcementHeaders=token=>({apikey:apiKey,Authorization:"Bearer "+token,"Content-Type":"application/json"});
+$("announcementAudience").onchange=()=>{$("announcementTargetsWrap").hidden=$("announcementAudience").value!=="selected"};
+async function announcementFetch(url,options={}){
+ const token=await verifiedToken();
+ const res=await fetch(url,{...options,headers:{...announcementHeaders(token),...(options.headers||{})}});
+ if(!res.ok){let error={};try{error=await res.json()}catch{}throw Error(error.message||"Duyuru işlemi başarısız ("+res.status+").")}
+ if(res.status===204||res.status===201&&res.headers.get("content-length")==="0")return null;
+ const raw=await res.text();return raw?JSON.parse(raw):null;
+}
+async function loadAdminAnnouncements(){
+ const root=$("announcementAdminList"),status=$("announcementAdminStatus");
+ try{
+  const rows=await announcementFetch(announcementEndpoint+"?select=id,title,body,audience,is_active,starts_at,ends_at,created_at&order=created_at.desc&limit=60");
+  root.replaceChildren();
+  if(!rows.length){root.textContent="Henüz duyuru yayımlanmadı.";return}
+  for(const row of rows){
+   const div=document.createElement("div");
+   div.style.cssText="padding:11px 0;border-top:1px solid #dfe8f1;display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap";
+   const label=document.createElement("div");
+   const strong=document.createElement("strong");strong.textContent=row.title;
+   const p=document.createElement("p");p.textContent=row.body;p.style.margin="4px 0";
+   const small=document.createElement("small");small.textContent=(row.is_active?"Yayında":"Yayından kaldırıldı")+" · "+(row.audience==="all"?"Herkese":"Seçili kullanıcılara")+" · "+new Date(row.created_at).toLocaleString("tr-TR");
+   label.append(strong,p,small);
+   const btn=document.createElement("button");btn.type="button";btn.textContent=row.is_active?"Yayından Kaldır":"Yeniden Yayımla";
+   btn.onclick=async()=>{btn.disabled=true;try{await announcementFetch(announcementEndpoint+"?id=eq."+encodeURIComponent(row.id),{method:"PATCH",body:JSON.stringify({is_active:!row.is_active})});await loadAdminAnnouncements()}catch(e){status.textContent=e.message}finally{btn.disabled=false}};
+   div.append(label,btn);root.appendChild(div);
+  }
+  status.textContent=rows.length+" duyuru listelendi.";
+ }catch(e){status.textContent="Duyurular yüklenemedi: "+e.message}
+}
+$("announcementRefresh").onclick=loadAdminAnnouncements;
+$("announcementPublish").onclick=async()=>{
+ const btn=$("announcementPublish"),status=$("announcementAdminStatus");
+ const title=$("announcementTitle").value.trim(),body=$("announcementBody").value.trim(),audience=$("announcementAudience").value;
+ if(!title||!body){status.textContent="Başlık ve metin zorunlu.";return}
+ const ids=$("announcementTargets").value.split(/[\s,;]+/).filter(Boolean);
+ if(audience==="selected"&&(!ids.length||ids.some(id=>!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)))){status.textContent="Seçili kullanıcılar için geçerli UUID girin.";return}
+ const rawEnds=$("announcementEnds").value;const ends=rawEnds?new Date(rawEnds).toISOString():null;
+ if(ends&&new Date(ends)<=new Date()){status.textContent="Bitiş tarihi gelecekte olmalıdır.";return}
+ btn.disabled=true;status.textContent="Yayımlanıyor…";
+ try{
+  const token=await verifiedToken();
+  const userRes=await fetch(endpoint+"/auth/v1/user",{headers:announcementHeaders(token)});
+  if(!userRes.ok)throw Error("Hesap doğrulanamadı.");
+  const user=await userRes.json();
+  await announcementFetch(announcementEndpoint,{method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify({title,body,audience,target_user_ids:audience==="selected"?ids:[],ends_at:ends,created_by:user.id})});
+  $("announcementTitle").value="";$("announcementBody").value="";$("announcementTargets").value="";
+  status.textContent="Duyuru yayımlandı.";await loadAdminAnnouncements();
+ }catch(e){status.textContent="Yayımlanamadı: "+e.message}
+ finally{btn.disabled=false}
+};
+
+async function verifiedToken(){
+ let saved;try{saved=JSON.parse(sessionStorage.getItem(sessionKey)||localStorage.getItem(rememberedKey)||"null")}catch{}
+ if(!saved?.access_token)throw Error("Oturum bulunamadı. Önce Ayarlar üzerinden giriş yapın.");
+ let token=saved.access_token;
+ const authHeaders=()=>({apikey:apiKey,Authorization:"Bearer "+token});
+ let res=await fetch(endpoint+"/auth/v1/user",{headers:authHeaders()});
+ if(!res.ok&&saved.refresh_token){
+  const refresh=await fetch(endpoint+"/auth/v1/token?grant_type=refresh_token",{method:"POST",headers:{apikey:apiKey,"Content-Type":"application/json"},body:JSON.stringify({refresh_token:saved.refresh_token})});
+  if(refresh.ok){const next=await refresh.json();saved={...saved,...next};token=next.access_token;sessionStorage.setItem(sessionKey,JSON.stringify(saved));if(localStorage.getItem(rememberedKey))localStorage.setItem(rememberedKey,JSON.stringify(saved));res=await fetch(endpoint+"/auth/v1/user",{headers:authHeaders()})}
+ }
+ if(!res.ok)throw Error("Oturum geçersiz. Yeniden giriş yapın.");
+ return token;
+}
+async function load(){
+ $("refresh").disabled=true;$("error").textContent="";
+ try{
+  const token=await verifiedToken();
+  const res=await fetch(endpoint+"/rest/v1/rpc/emlakcrm_admin_subscription_overview",{method:"POST",headers:{apikey:apiKey,Authorization:"Bearer "+token,"Content-Type":"application/json"},body:"{}"});
+  if(!res.ok){const err=await res.json().catch(()=>({}));if([401,403].includes(res.status)||err.code==="42501")throw Error("Bu ekran yalnızca yetkili süper yöneticiler içindir.");throw Error(err.message||"Veriler alınamadı ("+res.status+").")}
+  const payload=await res.json();if(!Array.isArray(payload.users))throw Error("Veri biçimi beklenenden farklı.");
+  userRows=payload.users;$("gate").classList.add("hidden");$("dashboard").classList.remove("hidden");render();void loadDiscounts();void remaxCheck();void shopierCheck();void loadOfficeShopierProduct();void shopierProductCreationCheck();void loadLegalDeliveryStatus();void loadAdminAnnouncements();$("updated").textContent="Son güncelleme: "+fmt(payload.generated_at);
+ }catch(err){userRows=[];showGate(err.message);$("error").textContent=err.message}
+ finally{$("refresh").disabled=false}
+}
+$("approvalJump").addEventListener("click",()=>{$("discountRows").closest("section")?.scrollIntoView({behavior:"smooth",block:"start"});});
+$("approvalNotifyEnable").addEventListener("click",async()=>{
+ const info=$("approvalNotifyInfo");
+ if(!("Notification" in window)){info.textContent="Bu tarayıcı bildirimleri desteklemiyor; panel içi kırmızı uyarı çalışır.";return}
+ if(Notification.permission==="denied"){info.textContent="Bildirim izni tarayıcı ayarlarından açılmalı.";return}
+ try{
+  const permission=await Notification.requestPermission();
+  info.textContent=permission==="granted"?"Bildirim açık. Panel açıkken yeni İlyada 3 başvuruları bildirilir.":"İzin verilmedi. Paneldeki kırmızı uyarı çalışmaya devam eder.";
+ }catch(_){info.textContent="Bildirim izni alınamadı; paneldeki uyarı çalışır."}
+});
+setInterval(()=>{if(!$("dashboard").classList.contains("hidden"))void loadDiscounts({quiet:true})},60000);
+$("search").addEventListener("input",render);$("filter").addEventListener("change",render);$("refresh").addEventListener("click",load);$("discountRefresh").addEventListener("click",loadDiscounts);$("legalStatusRefresh").addEventListener("click",loadLegalDeliveryStatus);load();
+</script></body></html>

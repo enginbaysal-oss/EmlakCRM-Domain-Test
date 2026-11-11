@@ -1,0 +1,69 @@
+name: Verify guarded EmlakCRM app snapshot
+on:
+  push:
+    branches:
+      - staging-app-snapshot-20261111
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify early guard in every imported page and root site isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f CNAME
+          test "$(cat CNAME)" = "emlkcrm.com.tr"
+          test -f index.html
+          test -f app/index.html
+          test -f app/preview-guard.js
+          test -f app/portfoy-rapor.html
+          test -f app/sifre-yenile.html
+          test ! -e app/CNAME
+          node --check app/preview-guard.js
+          python3 - <<'PY'
+          import pathlib,re
+          pages=list(pathlib.Path("app").glob("*.html"))
+          assert len(pages)>=15, f"Too few pages: {len(pages)}"
+          for path in pages:
+              t=path.read_text(encoding="utf-8")
+              assert re.search(r'<head[^>]*><script src="./preview-guard.js"></script>', t, re.I), f"No first-script guard: {path.name}"
+          assert "https://emlkcrm.com.tr" in pathlib.Path("app/index.html").read_text()
+          assert "https://enginbaysal-oss.github.io" in pathlib.Path("app/index.html").read_text()
+          print("APP_HTML_GUARD_OK: "+str(len(pages))+" guarded pages")
+          PY
+      - name: Confirm preview network calls block server-side writes but allow login
+        shell: bash
+        run: |
+          node <<'JS'
+          const fs=require("node:fs"),vm=require("node:vm"),assert=require("node:assert/strict");
+          const code=fs.readFileSync("app/preview-guard.js","utf8");
+          const calls=[];
+          const app={fetch:async(input,init)=>{calls.push({input,init});return {ok:true}}};
+          const listeners={};
+          const doc={readyState:"loading",documentElement:{dataset:{}},addEventListener:(ev,cb)=>{listeners[ev]=cb}};
+          const originalXHR=function(){};
+          originalXHR.prototype.open=function(method){this.method=method};
+          originalXHR.prototype.send=function(){};
+          const sandbox={
+             location:{origin:"https://emlkcrm.com.tr",pathname:"/app/index.html"},
+             window:app,XMLHttpRequest:originalXHR,
+             document:doc,navigator:{sendBeacon:()=>true},
+             Error,URL,console
+          };
+          vm.runInNewContext(code,sandbox,{timeout:1000});
+          (async()=>{
+            assert.equal(doc.documentElement.dataset.emlakcrmPreview,"true");
+            await app.fetch("https://tffvwxskvjuxoekwgdef.supabase.co/rest/v1/emlakcrm_user_backups",{method:"GET"});
+            await app.fetch("https://tffvwxskvjuxoekwgdef.supabase.co/auth/v1/token?grant_type=password",{method:"POST"});
+            await assert.rejects(app.fetch("https://tffvwxskvjuxoekwgdef.supabase.co/rest/v1/emlakcrm_user_backups",{method:"POST"}),/kapalı/);
+            await assert.rejects(app.fetch("https://tffvwxskvjuxoekwgdef.supabase.co/functions/v1/emlakcrm-shopier-coupon",{method:"POST"}),/kapalı/);
+            assert.equal(calls.length,2);
+            const xhr=new originalXHR();xhr.open("POST","/rest/v1/test");
+            assert.throws(()=>xhr.send("hello"),/kapalı/);
+            console.log("PREVIEW_NETWORK_WRITE_GUARD_OK");
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          JS
