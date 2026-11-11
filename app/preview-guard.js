@@ -41,7 +41,12 @@
   link.href="https://enginbaysal-oss.github.io/EmlakCRM-Web/";
   link.textContent="Çalışan EmlakCRM'yi aç";
   link.style.cssText="color:#124d70;text-decoration:underline";
-  banner.append(text,link);
+  const separator=document.createTextNode("  ·  ");
+  const inspect=document.createElement("a");
+  inspect.href="https://emlkcrm.com.tr/app/veri-karsilastir.html";
+  inspect.textContent="Bu cihazdaki kayıtları bulutla karşılaştır";
+  inspect.style.cssText="color:#124d70;text-decoration:underline";
+  banner.append(text,link,separator,inspect);
   document.body.prepend(banner);
  };
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",addBanner,{once:true});else addBanner();
