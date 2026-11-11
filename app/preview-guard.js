@@ -36,7 +36,7 @@
   banner.id="emlakcrm-staging-banner";
   banner.style.cssText="position:sticky;top:0;z-index:2147483647;background:#fff0da;border-bottom:3px solid #df7c19;padding:12px 17px;font:700 14px/1.5 system-ui,sans-serif;color:#54310e;box-shadow:0 4px 12px #0002";
   const text=document.createElement("span");
-  text.textContent="🧪 TEST ÖNİZLEMESİ — Gerçek EmlakCRM yayını değildir. Yeni alan adında yalnızca giriş ve görünüm test edilir. Kayıt, ödeme ve üyelik değişiklikleri kapalıdır. Veriler bu adreste henüz geri yüklenmemiş olabilir. ";
+  text.textContent="🧪 TEST ÖNİZLEMESİ — Gerçek EmlakCRM yayını değildir. Yeni alan adında yalnızca giriş ve görünüm test edilir. Kayıt, ödeme ve üyelik değişiklikleri kapalıdır. Bu adreste 0 / 0 görünmesi normaldir; eski adresteki veriler silinmedi. ";
   const link=document.createElement("a");
   link.href="https://enginbaysal-oss.github.io/EmlakCRM-Web/";
   link.textContent="Çalışan EmlakCRM'yi aç";
@@ -46,7 +46,12 @@
   inspect.href="https://emlkcrm.com.tr/app/veri-karsilastir.html";
   inspect.textContent="Bu cihazdaki kayıtları bulutla karşılaştır";
   inspect.style.cssText="color:#124d70;text-decoration:underline";
-  banner.append(text,link,separator,inspect);
+  const recoverSeparator=document.createTextNode("  ·  ");
+  const restore=document.createElement("a");
+  restore.href="https://emlkcrm.com.tr/app/bulut-yedek.html";
+  restore.textContent="☁️ Bulut yedeklerimi bu test adresine getir";
+  restore.style.cssText="color:#14603f;text-decoration:underline;font-weight:900";
+  banner.append(text,link,separator,inspect,recoverSeparator,restore);
   document.body.prepend(banner);
  };
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",addBanner,{once:true});else addBanner();
