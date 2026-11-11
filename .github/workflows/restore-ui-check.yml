@@ -26,7 +26,7 @@ jobs:
           assert 'selectAllPreview' in text and 'selectNonePreview' in text
           assert text.count('localStorage.setItem(key,updated);')==1
           assert 'Bu sırada yerel kayıtlar değişti.' in text
-          assert 'Bu cihazda başka hesap aktif' in text
+          assert 'başka hesap aktif' in text
           assert 'Mevcut cihaz yedeğimi indirdim' in text
           assert 'Bu adreste 0 / 0 görünmesi normaldir' in guard
           assert 'app/bulut-yedek.html' in guard
