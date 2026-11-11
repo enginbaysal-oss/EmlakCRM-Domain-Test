@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src https://tffvwxskvjuxoekwgdef.supabase.co; img-src 'none'; form-action 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; upgrade-insecure-requests">
+<title>EmlakCRM | Güvenli Veri Karşılaştırma</title>
+<style>
+:root{font:16px/1.5 system-ui,-apple-system,'Segoe UI',Arial,sans-serif;color:#1c4057;background:#f0f7fb}*{box-sizing:border-box}
+body{margin:0;padding:22px 15px;min-height:100vh;background:linear-gradient(150deg,#eaf3fa,#fbfdfe)}
+main{max-width:920px;margin:auto}.card{border:1px solid #d6e7f0;background:#fff;box-shadow:0 13px 35px #21445d1a;border-radius:18px;padding:27px}
+h1{font-size:29px;line-height:1.2;margin:12px 0}h2{font-size:20px;margin:18px 0 8px}
+p{color:#536b7a}header{display:flex;justify-content:space-between;align-items:center;gap:13px;flex-wrap:wrap}
+.brand{font-size:23px;color:#163c5a;font-weight:900;text-decoration:none}.brand span{color:#e78c30}.pill{font-size:12px;color:#176546;background:#e5f5ec;font-weight:800;padding:6px 11px;border-radius:999px}
+.info{border-left:4px solid #2d819d;background:#edf6fb;padding:13px 15px;border-radius:9px;margin:17px 0}
+.notice{background:#f3f8fb;padding:12px;border-radius:9px;margin-top:14px;white-space:pre-wrap}
+.notice.error{color:#9d3b2c;background:#fff0ea}.notice.success{color:#216041;background:#e6f4eb}
+.compare{border:1px solid #dceaf2;border-radius:13px;overflow:hidden;margin:19px 0}
+.line{display:grid;grid-template-columns:minmax(120px,1.3fr) minmax(85px,1fr) minmax(100px,1fr) minmax(130px,1.1fr);gap:8px;padding:13px 15px;align-items:center;border-top:1px solid #e2ebf1}
+.line:first-child{border-top:0}.line.header{background:#eaf4f9;font-size:13px;font-weight:800}.line strong{font-size:20px}
+.ok{color:#156541;font-weight:750}.diff{color:#aa651b;font-weight:750}
+button,.button{font:800 15px system-ui;cursor:pointer;border:0;background:#e9841b;padding:13px 17px;border-radius:9px;color:#1e374d;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+button:disabled{opacity:.6;cursor:not-allowed}.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.links a{color:#135d7e;font-weight:800}
+small{color:#5d7283;display:block}
+[hidden]{display:none!important}
+@media(max-width:680px){.card{padding:19px}.line{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.line>:first-child{grid-column:1/-1}.line.header{display:none}.line>span:not(:first-child){font-size:13px}.line strong{font-size:19px}}
+</style>
+</head>
+<body>
+<main><section class="card">
+<header><a class="brand" href="./index.html">Emlak<span>CRM</span></a><span class="pill">GÜVENLİ TEST · Yalnızca okuma</span></header>
+<h1>Veri taşıma durumunu kontrol et</h1>
+<p>Yeni adreste giriş yaptığın hesabın <strong>bu tarayıcıdaki kayıtları</strong> ile <strong>aynı hesabın bulut yedeklerindeki</strong> son kayıt sayılarını yan yana karşılaştırır.</p>
+<div class="info"><strong>Veriler değişmez.</strong> Bu sayfa kullanıcı verilerini ekrana dökmez, dosya indirmez, geri yüklemez, silmez, göndermez ve yeni oturum açtırmaz. Yalnızca sayı ve son yedek tarihlerini okur.</div>
+<button id="check" type="button">Kayıt Sayılarını Kontrol Et</button>
+<p id="status" class="notice" role="status" aria-live="polite">Yeni EmlakCRM önizlemesinde hesabına giriş yaptıktan sonra bu ekranı aynı sekmede aç.</p>
+<div id="results" hidden>
+<h2>Bu cihaz ile bulut karşılaştırması</h2>
+<div class="compare">
+<div class="line header"><span>Veri türü</span><span>Bu cihaz</span><span>Son bulut yedeği</span><span>Durum</span></div>
+<div id="rows"></div>
+</div>
+<p id="summary" class="info"></p>
+<small>Bulut sayıları son mevcut yedek anını gösterir. Sayıların eşleşmesi, tüm veri alanlarının eşit olduğunu tek başına kanıtlamaz.</small>
+</div>
+<div class="links">
+<a href="./index.html#account">Test uygulamasına dön</a>
+<a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/">Çalışan EmlakCRM'yi aç</a>
+</div>
+</section></main>
+<script type="module" src="./assets/veri-karsilastir.js"></script>
+</body></html>
