@@ -48,38 +48,74 @@
     .foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
     @media(max-width:780px){.hero-inner{grid-template-columns:1fr;padding-top:55px;padding-bottom:60px}.summary{display:none}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:540px){.wrap{padding:0 17px}.logo{font-size:22px}.top{min-height:75px}.top .btn{padding:10px 13px;font-size:14px}.hero p{font-size:16px}.grid{grid-template-columns:1fr}.actions .btn{width:100%}section.modules{padding:42px 0}}
+
+    .benefits,.how,.pricing,.faq{padding:54px 0}
+    .benefits{background:#eef6fa}.how{background:#fff}.pricing{background:#edf5f9}.faq{background:#fff}
+    .section-title{font-size:clamp(25px,3vw,32px);line-height:1.25;letter-spacing:-.5px;margin:0 0 10px;color:var(--navy)}
+    .section-lead{color:var(--muted);margin:0 0 25px;max-width:780px}
+    .benefit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .benefit-item,.how-step{background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:0 6px 20px #1037510b}
+    .benefit-item h3,.how-step h3{font-size:17px;margin:0 0 6px}
+    .benefit-item p,.how-step p{font-size:14px;color:var(--muted);margin:0}
+    .how-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .how-number{width:36px;height:36px;display:grid;place-items:center;background:#e7f3f8;color:#15516e;border-radius:11px;font-weight:900;margin-bottom:12px}
+    .price-card{background:#fff;border:1px solid #cbdde6;border-radius:18px;box-shadow:0 8px 28px #10375115;padding:28px;display:flex;justify-content:space-between;gap:24px;align-items:center}
+    .price-card h3{margin:0 0 6px;font-size:20px}.price-card p{margin:6px 0;color:var(--muted)}
+    .price-amount{font-size:42px;color:#0f5775;font-weight:900;letter-spacing:-1.5px;line-height:1.1}
+    .price-note{font-size:13px;color:var(--muted);margin-top:6px}
+    .faq-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .faq details{background:#f8fbfd;border:1px solid var(--line);padding:16px 18px;border-radius:13px}
+    .faq summary{cursor:pointer;font-weight:750;color:var(--navy)}.faq details p{margin:10px 0 0;font-size:14px;color:var(--muted)}
+    .legal-nav{display:flex;gap:15px;flex-wrap:wrap;margin-top:18px;font-size:13px}
+    .legal-nav a{color:var(--navy);text-decoration:underline}
+    @media(max-width:780px){.benefit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.how-grid{grid-template-columns:1fr}.price-card{flex-direction:column;align-items:flex-start}.faq-list{grid-template-columns:1fr}}
+    @media(max-width:540px){.benefits,.how,.pricing,.faq{padding:38px 0}.benefit-grid{grid-template-columns:1fr}.price-card{padding:20px}.price-amount{font-size:37px}}
   </style>
 </head>
 <body>
   <header>
     <div class="wrap top">
       <a class="logo" href="https://emlkcrm.com.tr/" aria-label="EmlakCRM ana sayfa">Emlak<span>CRM</span></a>
-      <a class="btn btn-primary" href="https://emlkcrm.com.tr/#account">Uygulamaya Giriş</a>
+      <a class="btn btn-primary" href="https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html#account">Giriş Yap</a>
     </div>
   </header>
   <main>
     <div class="hero">
       <div class="wrap hero-inner">
         <div>
-          <span class="eyebrow">Gayrimenkul danışmanları için dijital çalışma alanı</span>
-          <h1>Emlak işlerinizi <span>tek merkezden</span> yönetin.</h1>
-          <p>Müşteri, portföy, ajanda ve emlak işlemlerinizi bir araya getiren pratik çalışma alanı.</p>
+          <span class="eyebrow">Bireysel gayrimenkul danışmanları için dijital çalışma alanı</span>
+          <h1>Müşterilerin, portföyün ve <span>ajandan tek ekranda.</span></h1>
+          <p>EmlakCRM; müşteri takibi, ajanda, portföy ve yetki süresi yönetimini bir araya getirir. Kimi ne zaman arayacağını ve yaklaşan yetki bitişlerini daha kolay takip et.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="https://emlkcrm.com.tr/#account">EmlakCRM’yi Aç</a>
-            <a class="btn btn-white" href="#moduller">Modülleri Keşfet</a>
+            <a class="btn btn-primary" href="https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html#account">Hesap Oluştur</a>
+            <a class="btn btn-white" href="#nasil-calisir">Nasıl çalışır?</a>
           </div>
         </div>
         <aside class="summary" aria-label="Öne çıkan özellikler">
-          <h2>Daha düzenli iş akışı</h2>
+          <h2>Günlük işin daha kolay</h2>
           <ul>
-            <li>Müşteri ve portföy yönetimi</li>
-            <li>Tapu ve masraf hesaplamaları</li>
-            <li>Belgeler ve imza işlemleri</li>
-            <li>Gayrimenkul sunum araçları</li>
+            <li>Görüşme ve hatırlatma takibi</li>
+            <li>Yetki sürelerini gözden geçirme</li>
+            <li>Müşteri–portföy eşleştirme</li>
+            <li>Yerel ve isteğe bağlı bulut yedeği</li>
           </ul>
         </aside>
       </div>
     </div>
+
+    <section class="benefits" id="faydalar">
+      <div class="wrap">
+        <h2 class="section-title">Takibi kolaylaştır, hiçbir ayrıntıyı gözden kaçırma</h2>
+        <p class="section-lead">EmlakCRM günlük emlak işlerini tek yerde düzenlemene yardımcı olur.</p>
+        <div class="benefit-grid">
+          <article class="benefit-item"><h3>Bugün kimi arayacağını gör</h3><p>Görüşmelerini ve takip tarihlerini ajandanda düzenle.</p></article>
+          <article class="benefit-item"><h3>Yetki sürelerini takip et</h3><p>Portföylerinin başlangıç ve bitiş tarihlerini bir arada gör.</p></article>
+          <article class="benefit-item"><h3>Uygun portföyü eşleştir</h3><p>Alıcı taleplerini ve portföy kayıtlarını karşılaştır.</p></article>
+          <article class="benefit-item"><h3>Teklifleri kayıt altında tut</h3><p>Portföyüne gelen tekliflerle ilgili bilgileri düzenli takip et.</p></article>
+          <article class="benefit-item"><h3>Yedeklemeyi yönet</h3><p>Verilerini dosyaya veya hesabına özel bulut yedeğine kaydet.</p></article>
+        </div>
+      </div>
+    </section>
     <section class="modules" id="moduller">
       <div class="wrap">
         <h2>İhtiyacınız olan araçlar bir arada</h2>
@@ -90,19 +126,60 @@
           <article class="item"><div class="emoji" aria-hidden="true">📄</div><h3>Emlak Asistanı</h3><p>Belgeler, şablonlar ve danışmanlık iş akışları.</p></article>
           <article class="item"><div class="emoji" aria-hidden="true">🧮</div><h3>TapuMatik</h3><p>Tapu harcı, hizmet bedeli, alıcı-satıcı toplamları.</p></article>
           <article class="item"><div class="emoji" aria-hidden="true">✍️</div><h3>PDF İmzala</h3><p>PDF belgeleri için imza ve paylaşım işlemleri.</p></article>
-          <article class="item"><div class="emoji" aria-hidden="true">🚁</div><h3>Drone Çekim</h3><p>Gayrimenkul tanıtımında görsel sunum araçları.</p></article>
+          <article class="item"><div class="emoji" aria-hidden="true">🚁</div><h3>Drone Çekim</h3><p>Sanal yaklaşma videosu ve görsel sunum; gerçek drone uçuşu değildir.</p></article>
         </div>
         <div class="safe">
           <strong>Güvenli geçiş aşamasındayız</strong>
-          Bu yeni alan adı EmlakCRM’nin karşılama sayfasıdır. Kullanıcı oturumları ve kayıtlar etkilenmesin diye giriş ve uygulama işlemleri şimdilik mevcut güvenli GitHub Pages adresinden açılır. Bu sayfa şifre, ödeme veya müşteri bilgisi toplamaz.
+          Bu alan adı şu an tanıtım ve geçiş sayfasıdır. Mevcut müşteri kayıtları etkilenmesin diye hesap oluşturma, giriş ve ödeme işlemleri şimdilik çalışan EmlakCRM uygulamasında açılır. Bu sayfa şifre, ödeme veya müşteri bilgisi toplamaz.
         </div>
       </div>
     </section>
+    <section class="how" id="nasil-calisir">
+      <div class="wrap">
+        <h2 class="section-title">Nasıl çalışır?</h2>
+        <p class="section-lead">Üç adımda daha düzenli bir çalışma alanı.</p>
+        <div class="how-grid">
+          <article class="how-step"><div class="how-number">1</div><h3>Hesabını oluştur</h3><p>Mevcut EmlakCRM uygulaması üzerinden kayıt ol ve hesabına giriş yap.</p></article>
+          <article class="how-step"><div class="how-number">2</div><h3>Müşteri ve portföylerini ekle</h3><p>Alıcı, satıcı ve portföy bilgilerini kendi hesabında düzenle.</p></article>
+          <article class="how-step"><div class="how-number">3</div><h3>Ajandanla takip et</h3><p>Görüşme ve yetki sürelerini kontrol et; düzenli aralıklarla yedek al.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing" id="fiyat">
+      <div class="wrap">
+        <h2 class="section-title">Tek paket, açık fiyat</h2>
+        <p class="section-lead">12 aylık abonelik, tek ödeme ve otomatik yenileme olmadan.</p>
+        <div class="price-card">
+          <div><h3>EmlakCRM Yıllık Abonelik</h3><p>Onaylı RE/MAX İlyada 3 danışmanları için yıllık <strong>500 TL (KDV dâhil)</strong>.</p><p>Ofis indirimi, talebin doğrulanıp onaylanmasından sonra geçerlidir.</p><p>Ödeme Shopier üzerinden, çalışan uygulamanın abonelik ekranında yapılır.</p></div>
+          <div><div class="price-amount">750 TL</div><div class="price-note">12 ay · KDV dâhil</div><a class="btn btn-primary" href="https://enginbaysal-oss.github.io/EmlakCRM-Web/abonelik-satin-al.html" style="margin-top:16px">Abonelik Bilgileri</a></div>
+        </div>
+      </div>
+    </section>
+    <section class="faq" id="sss">
+      <div class="wrap">
+        <h2 class="section-title">Sık sorulan sorular</h2>
+        <p class="section-lead">Satın almadan önce bilmen gerekenler.</p>
+        <div class="faq-list">
+          <details><summary>Verilerim nerede tutuluyor?</summary><p>Müşteri ve portföy kayıtları öncelikle kullandığın tarayıcıda saklanır. İstersen dosya veya hesabına özel bulut yedeği alabilirsin. Cihazlar arasında otomatik veri eşitleme henüz bulunmuyor.</p></details>
+          <details><summary>Abonelik otomatik yenilenir mi?</summary><p>Hayır. 12 aylık kullanım süresi sonunda yenileme kararı sana aittir; otomatik tahsilat yapılmaz.</p></details>
+          <details><summary>Ödeme nasıl yapılır?</summary><p>Shopier üzerinden ödeme yapılır. Aboneliğinin hesabına eşleştirilebilmesi için EmlakCRM'de kullandığın e-posta adresini ödeme sırasında da kullan.</p></details>
+          <details><summary>Ödedim ama aboneliğim açılmadı, ne yapmalıyım?</summary><p>Tekrar ödeme yapma. Sipariş bilgilerinle <a href="mailto:enginbysl45@gmail.com">enginbysl45@gmail.com</a> adresinden veya <a href="tel:+905531354681">0553 135 46 81</a> numarasından bize ulaş.</p></details>
+        </div>
+        <nav class="legal-nav" aria-label="Yasal ve iletişim bağlantıları">
+          <a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/mesafeli-satis-sozlesmesi.html">Mesafeli Satış Sözleşmesi</a>
+          <a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/teslimat-iade.html">Teslimat ve İade</a>
+          <a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/gizlilik-politikasi.html">Gizlilik Politikası</a>
+          <a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/iletisim.html">İletişim</a>
+        </nav>
+      </div>
+    </section>
+
   </main>
   <footer>
     <div class="wrap foot">
       <span>© 2026 EmlakCRM · Gayrimenkul danışmanları için dijital araçlar</span>
-      <a href="https://emlkcrm.com.tr/#account">Mevcut uygulamaya güvenli giriş</a>
+      <a href="https://enginbaysal-oss.github.io/EmlakCRM-Web/index.html#account">Çalışan EmlakCRM uygulamasına giriş</a>
     </div>
   </footer>
 </body>
